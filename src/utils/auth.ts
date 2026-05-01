@@ -76,6 +76,13 @@ import {
 import { sleep } from './sleep.js'
 import { jsonParse } from './slowOperations.js'
 import { clearToolSchemaCache } from './toolSchemaCache.js'
+import { clearTrustedDeviceTokenCache } from '../bridge/trustedDevice.js'
+import { refreshGrowthBookAfterAuthChange } from '../services/analytics/growthbook.js'
+import { getGroveNoticeConfig, getGroveSettings } from '../services/api/grove.js'
+import { clearPolicyLimitsCache } from '../services/policyLimits/index.js'
+import { clearRemoteManagedSettingsCache } from '../services/remoteManagedSettings/index.js'
+import { gracefulShutdownSync } from './gracefulShutdown.js'
+import { resetUserCache } from './user.js'
 
 /** Default TTL for API key helper cache in milliseconds (5 minutes) */
 const DEFAULT_API_KEY_HELPER_TTL = 5 * 60 * 1000
@@ -1997,6 +2004,64 @@ export async function validateForceLoginOrg(): Promise<OrgValidationResult> {
       `but this machine requires organization ${requiredOrgUuid}.\n\n` +
       `Please log in with the correct organization: claude auth login`,
   }
+}
+
+export async function clearAuthRelatedCaches(): Promise<void> {
+  // Clear the OAuth token cache
+  getClaudeAIOAuthTokens.cache?.clear?.();
+  clearTrustedDeviceTokenCache();
+  clearBetasCaches();
+  clearToolSchemaCache();
+
+  // Clear user data cache BEFORE GrowthBook refresh so it picks up fresh credentials
+  resetUserCache();
+  refreshGrowthBookAfterAuthChange();
+
+  // Clear Grove config cache
+  getGroveNoticeConfig.cache?.clear?.();
+  getGroveSettings.cache?.clear?.();
+
+  // Clear remotely managed settings cache
+  await clearRemoteManagedSettingsCache();
+
+  // Clear policy limits cache
+  await clearPolicyLimitsCache();
+}
+
+export async function performLogout({
+  clearOnboarding = false
+}: {
+  clearOnboarding?: boolean
+} = {}): Promise<void> {
+  // Flush telemetry BEFORE clearing credentials to prevent org data leakage
+  const {
+    flushTelemetry
+  } = await import('./telemetry/instrumentation.js');
+  await flushTelemetry();
+  await removeApiKey();
+
+  // Wipe all secure storage data on logout
+  const secureStorage = getSecureStorage();
+  secureStorage.delete();
+  await clearAuthRelatedCaches();
+  saveGlobalConfig(current => {
+    const updated = {
+      ...current
+    };
+    if (clearOnboarding) {
+      updated.hasCompletedOnboarding = false;
+      updated.subscriptionNoticeCount = 0;
+      updated.hasAvailableSubscription = false;
+      if (updated.customApiKeyResponses?.approved) {
+        updated.customApiKeyResponses = {
+          ...updated.customApiKeyResponses,
+          approved: []
+        };
+      }
+    }
+    updated.oauthAccount = undefined;
+    return updated;
+  });
 }
 
 class GcpCredentialsTimeoutError extends Error {}

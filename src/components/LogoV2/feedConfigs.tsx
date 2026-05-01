@@ -39,7 +39,7 @@ export function createWhatsNewFeed(releaseNotes: string[]): FeedConfig {
       text: note
     };
   });
-  const emptyMessage = "external" === 'ant' ? 'Unable to fetch latest claude-cli-internal commits' : 'Check the Free Code changelog for updates';
+  const emptyMessage = "external" === 'ant' ? 'Unable to fetch latest claude-cli-internal commits' : 'RikkaSama is up to date! No news to show.';
   return {
     title: "external" === 'ant' ? "What's new [ANT-ONLY: Latest CC commits]" : "What's new",
     lines,

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find C:Users15860DesktopRikkaSama -type f \\\\\\(-name *.py -o -name *.js -o -name *.ts -o -name *.jsx -o -name *.tsx -o -name *.html -o -name *.htm -o -name *.j2 -o -name *.jinja -o -name *.vue -o -name *.svelte -o -name *.go -o -name *.java -o -name *.rs -o -name *.rb -o -name *.php -o -name *.yaml -o -name *.yml -o -name *.json -o -name *.toml -o -name *.cfg -o -name *.ini \\\\\\) ! -path */node_modules/* ! -path */.git/* ! -path */__pycache__/* ! -path */venv/* ! -path */.venv/*)",
+      "Bash(grep -rn \"login\\\\|logout\" src/ --include=*.ts --include=*.tsx -l)",
+      "Bash(grep -rn \"from.*commands/login\\\\|from.*commands/logout\\\\|from.*login/login\\\\|from.*logout/logout\" src/ --include=*.ts --include=*.tsx)",
+      "Bash(bun run:*)",
+      "Bash(grep -rn \"partialRecord\\\\|z\\\\.\" src/utils/sdk/ --include=*.ts)",
+      "Bash(grep -rn partialRecord node_modules/ --include=*.ts --include=*.d.ts --include=*.js --include=*.mjs)",
+      "Bash(grep -rn partialRecord node_modules/zod/ --include=*.ts --include=*.d.ts --include=*.mjs)",
+      "Bash(xargs grep:*)",
+      "Bash(grep -rn 'Undefined cannot' node_modules/zod/ --include=*.ts --include=*.mjs)"
+    ]
+  }
+}
