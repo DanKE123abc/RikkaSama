@@ -28,6 +28,7 @@ import { LIGHTNING_BOLT } from '../../constants/figures.js'
 import { isModelAllowed } from './modelAllowlist.js'
 import { type ModelAlias, isModelAlias } from './aliases.js'
 import { capitalize } from '../stringUtils.js'
+import { loadConfig } from '../jsonConfig.js'
 
 export type ModelShortName = string
 export type ModelName = string
@@ -176,6 +177,24 @@ export function getRuntimeMainLoopModel(params: {
  * @returns The default model setting to use
  */
 export function getDefaultMainLoopModelSetting(): ModelName | ModelAlias {
+  // Check if user has explicitly set a model in settings
+  const settings = getSettings_DEPRECATED() || {}
+  const userSelectedModel = settings.model
+  
+  // If user has selected a model, respect their choice (don't override with model_list[0])
+  if (userSelectedModel) {
+    return userSelectedModel
+  }
+  
+  // Check if custom model list is configured in config.json
+  const config = loadConfig()
+  const customModelList = config.model_list
+  
+  // If custom model list exists and user hasn't selected a model, use the first model as default
+  if (customModelList && Array.isArray(customModelList) && customModelList.length > 0) {
+    return customModelList[0]
+  }
+  
   // Ants default to defaultModel from flag config, or Opus 1M if not configured
   if (process.env.USER_TYPE === 'ant') {
     return (

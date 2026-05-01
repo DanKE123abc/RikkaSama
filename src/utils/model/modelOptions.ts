@@ -32,6 +32,8 @@ import {
 } from './model.js'
 import { has1mContext } from '../context.js'
 import { getGlobalConfig } from '../config.js'
+import { loadConfig } from '../jsonConfig.js'
+import { getAntModels } from './antModels.js'
 
 // @[MODEL LAUNCH]: Update all the available and default model option strings below.
 
@@ -43,6 +45,35 @@ export type ModelOption = {
 }
 
 export function getDefaultOptionForUser(fastMode = false): ModelOption {
+  // Check if user has explicitly set a model in settings
+  const settings = getSettings_DEPRECATED() || {}
+  const userSelectedModel = settings.model
+  
+  // If user has selected a model, show it as the default
+  if (userSelectedModel) {
+    return {
+      value: null,
+      label: 'Default (recommended)',
+      description: `Use the default model (currently ${userSelectedModel})`,
+      descriptionForModel: `Default model (currently ${userSelectedModel})`,
+    }
+  }
+  
+  // Check if custom model list is configured in config.json
+  const config = loadConfig()
+  const customModelList = config.model_list
+  
+  // If custom model list exists and user hasn't selected a model, use the first model as default
+  if (customModelList && Array.isArray(customModelList) && customModelList.length > 0) {
+    const firstModel = customModelList[0]
+    return {
+      value: null,
+      label: 'Default (recommended)',
+      description: `Use the default model (currently ${firstModel})`,
+      descriptionForModel: `Default model (currently ${firstModel})`,
+    }
+  }
+  
   if (process.env.USER_TYPE === 'ant') {
     const currentModel = renderDefaultModelSetting(
       getDefaultMainLoopModelSetting(),
@@ -269,6 +300,22 @@ function getOpusPlanOption(): ModelOption {
 // @[MODEL LAUNCH]: Update the model picker lists below to include/reorder options for the new model.
 // Each user tier (ant, Max/Team Premium, Pro/Team Standard/Enterprise, PAYG 1P, PAYG 3P) has its own list.
 function getModelOptionsBase(fastMode = false): ModelOption[] {
+  // Check if custom model list is configured in config.json
+  const config = loadConfig()
+  const customModelList = config.model_list
+  
+  if (customModelList && Array.isArray(customModelList) && customModelList.length > 0) {
+    // Use custom model list from config.json
+    return [
+      getDefaultOptionForUser(fastMode),
+      ...customModelList.map(modelName => ({
+        value: modelName,
+        label: modelName,
+        description: 'from your config',
+      })),
+    ]
+  }
+  
   if (process.env.USER_TYPE === 'ant') {
     // Build options from antModels config
     const antModelOptions: ModelOption[] = getAntModels().map(m => ({

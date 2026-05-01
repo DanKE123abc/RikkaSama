@@ -21,6 +21,9 @@ export interface JsonConfig {
   ANTHROPIC_SMALL_FAST_MODEL?: string
   ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION?: string
   
+  // 自定义模型列表（覆盖内置模型）
+  model_list?: string[]
+  
   // 云服务提供商配置
   CLAUDE_CODE_USE_BEDROCK?: boolean
   CLAUDE_CODE_USE_VERTEX?: boolean
