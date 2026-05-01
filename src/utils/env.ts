@@ -1,18 +1,33 @@
 import memoize from 'lodash-es/memoize.js'
 import { homedir } from 'os'
-import { join } from 'path'
+import { join, dirname } from 'path'
 import { fileSuffixForOauthConfig } from '../constants/oauth.js'
 import { isRunningWithBun } from './bundledMode.js'
 import { getClaudeConfigHomeDir, isEnvTruthy } from './envUtils.js'
 import { findExecutable } from './findExecutable.js'
 import { getFsImplementation } from './fsOperations.js'
 import { which } from './which.js'
+import { existsSync } from 'fs'
 
 type Platform = 'win32' | 'darwin' | 'linux'
 
 // Config and data paths
 export const getGlobalClaudeFile = memoize((): string => {
-  // Legacy fallback for backwards compatibility
+  // Priority 1: Check for data/.claude.json in executable directory (JSON config system)
+  try {
+    const execPath = process.execPath
+    const execDir = dirname(execPath)
+    const dataDir = join(execDir, 'data')
+    const dataConfigPath = join(dataDir, `.claude${fileSuffixForOauthConfig()}.json`)
+    
+    if (existsSync(dataConfigPath)) {
+      return dataConfigPath
+    }
+  } catch {
+    // Ignore errors, fall back to default behavior
+  }
+  
+  // Priority 2: Legacy fallback for backwards compatibility
   if (
     getFsImplementation().existsSync(
       join(getClaudeConfigHomeDir(), '.config.json'),
@@ -21,6 +36,7 @@ export const getGlobalClaudeFile = memoize((): string => {
     return join(getClaudeConfigHomeDir(), '.config.json')
   }
 
+  // Priority 3: Default to ~/.claude.json or CLAUDE_CONFIG_DIR override
   const filename = `.claude${fileSuffixForOauthConfig()}.json`
   return join(process.env.CLAUDE_CONFIG_DIR || homedir(), filename)
 })

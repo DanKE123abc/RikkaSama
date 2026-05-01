@@ -1,5 +1,44 @@
+# Dependencies
 node_modules/
-dist/
+bun.lock
+
+# Build output
 cli
 cli-dev
 cli-dev.exe
+dist/
+
+# Data directory (contains sensitive configuration)
+data/
+
+# Keep example config
+!data/config.example.json
+
+# Environment files (legacy support)
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Test coverage
+coverage/
+

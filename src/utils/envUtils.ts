@@ -1,14 +1,35 @@
 import memoize from 'lodash-es/memoize.js'
 import { homedir } from 'os'
-import { join } from 'path'
+import { join, dirname } from 'path'
+import { existsSync } from 'fs'
 
 // Memoized: 150+ callers, many on hot paths. Keyed off CLAUDE_CONFIG_DIR so
 // tests that change the env var get a fresh value without explicit cache.clear.
 export const getClaudeConfigHomeDir = memoize(
   (): string => {
-    return (
-      process.env.CLAUDE_CONFIG_DIR ?? join(homedir(), '.claude')
-    ).normalize('NFC')
+    // Priority 1: Explicit environment variable override
+    if (process.env.CLAUDE_CONFIG_DIR) {
+      return process.env.CLAUDE_CONFIG_DIR.normalize('NFC')
+    }
+    
+    // Priority 2: Check if we're running from a built executable
+    // If data/config.json exists in the executable's directory, use that as config dir
+    try {
+      const execPath = process.execPath
+      const execDir = dirname(execPath)
+      const dataDir = join(execDir, 'data')
+      const jsonConfigPath = join(dataDir, 'config.json')
+      
+      // If JSON config file exists, use data directory as config home
+      if (existsSync(jsonConfigPath)) {
+        return dataDir.normalize('NFC')
+      }
+    } catch {
+      // Ignore errors, fall back to default
+    }
+    
+    // Priority 3: Default to ~/.claude for backward compatibility
+    return join(homedir(), '.claude').normalize('NFC')
   },
   () => process.env.CLAUDE_CONFIG_DIR,
 )

@@ -1,5 +1,17 @@
 import { feature } from 'bun:bundle';
 
+// ============================================================================
+// JSON Config Loading - Load configuration from data/config.json before anything else
+// This must happen before any process.env reads
+// ============================================================================
+try {
+  const { applyConfigToEnv } = await import('../utils/jsonConfig.js');
+  applyConfigToEnv();
+} catch (error) {
+  // If config loading fails, continue with environment variables only
+  console.error('[JSON Config] Warning: Failed to load config file:', error);
+}
+
 // Bugfix for corepack auto-pinning, which adds yarnpkg to peoples' package.jsons
 // eslint-disable-next-line custom-rules/no-top-level-side-effects
 process.env.COREPACK_ENABLE_AUTO_PIN = '0';

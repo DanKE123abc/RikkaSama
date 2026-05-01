@@ -77,11 +77,39 @@ curl -fsSL https://raw.githubusercontent.com/win4r/free-code/main/install.sh | b
 
 This will check your system, install Bun if needed, clone the repo, build the binary with all experimental features enabled, and symlink it as `free-code` on your PATH.
 
-After install, just run:
+### Configuration
+
+**New: JSON Configuration System** 🎉
+
+Instead of environment variables, you can now use a simple JSON configuration file:
+
+1. Copy the example config:
+```bash
+cp data/config.example.json data/config.json
+```
+
+2. Edit `data/config.json` with your API key:
+```json
+{
+  "ANTHROPIC_API_KEY": "sk-ant-...",
+  "CLAUDE_LOCALE": "zh"
+}
+```
+
+3. Run the application:
+```bash
+free-code
+```
+
+**Legacy: Environment Variables**
+
+You can still use environment variables (they will be automatically imported to JSON on first run):
 ```bash
 export ANTHROPIC_API_KEY="sk-ant-..."
 free-code
 ```
+
+For more details, see [JSON Configuration Guide](docs/JSON_CONFIG_GUIDE.md).
 
 ---
 
