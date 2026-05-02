@@ -2,9 +2,9 @@ import * as React from 'react';
 import { Box, Text } from '../../ink.js';
 
 const LINES = [
-    ' ▐▛███▜▌  ',
-    '▝▜█████▛▘',
-    '  ▘▘ ▝▝  '
+    '  ▐▛▀▜▌  ',
+    ' ▝▜███▛▘ ',
+    '   ▝▀▘   ',
 ];
 
 export type ClawdPose = 'default';
