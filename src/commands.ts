@@ -5,7 +5,6 @@ import backfillSessions from './commands/backfill-sessions/index.js'
 import btw from './commands/btw/index.js'
 import goodClaude from './commands/good-claude/index.js'
 import issue from './commands/issue/index.js'
-import feedback from './commands/feedback/index.js'
 import clear from './commands/clear/index.js'
 import color from './commands/color/index.js'
 import commit from './commands/commit.js'
@@ -30,7 +29,6 @@ import installGitHubApp from './commands/install-github-app/index.js'
 import installSlackApp from './commands/install-slack-app/index.js'
 import breakCache from './commands/break-cache/index.js'
 import mcp from './commands/mcp/index.js'
-import mobile from './commands/mobile/index.js'
 import onboarding from './commands/onboarding/index.js'
 import pr_comments from './commands/pr_comments/index.js'
 import releaseNotes from './commands/release-notes/index.js'
@@ -147,7 +145,6 @@ import antTrace from './commands/ant-trace/index.js'
 import perfIssue from './commands/perf-issue/index.js'
 import sandboxToggle from './commands/sandbox-toggle/index.js'
 import chrome from './commands/chrome/index.js'
-import stickers from './commands/stickers/index.js'
 import advisor from './commands/advisor.js'
 import { logError } from './utils/log.js'
 import { toError } from './utils/errors.js'
@@ -284,7 +281,6 @@ const COMMANDS = memoize((): Command[] => [
   installSlackApp,
   mcp,
   memory,
-  mobile,
   model,
   outputStyle,
   remoteEnv,
@@ -299,10 +295,8 @@ const COMMANDS = memoize((): Command[] => [
   stats,
   status,
   statusline,
-  stickers,
   tag,
   theme,
-  feedback,
   review,
   ultrareview,
   rewind,
@@ -627,12 +621,9 @@ export const REMOTE_SAFE_COMMANDS: Set<Command> = new Set([
   usage, // Show usage info
   copy, // Copy last message
   btw, // Quick note
-  feedback, // Send feedback
   plan, // Plan mode toggle
   keybindings, // Keybinding management
   statusline, // Status line toggle
-  stickers, // Stickers
-  mobile, // Mobile QR code
 ])
 
 /**
