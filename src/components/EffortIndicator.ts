@@ -21,7 +21,7 @@ export function getEffortNotificationText(
 ): string | undefined {
   if (!modelSupportsEffort(model)) return undefined
   const level = getDisplayedEffortLevel(model, effortValue)
-  return `${effortLevelToSymbol(level)}${model}|${level} · /effort`
+  return `${effortLevelToSymbol(level)} ${model}|${level}`
 }
 
 export function effortLevelToSymbol(level: EffortLevel): string {
