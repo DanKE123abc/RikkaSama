@@ -23,9 +23,9 @@ const TAB_STATUS_PRESETS: Record<
   { indicator: Color; status: string; statusColor: Color }
 > = {
   idle: {
-    indicator: rgb(0, 215, 95),
+    indicator: rgb(0, 217, 255),
     status: 'Idle',
-    statusColor: rgb(136, 136, 136),
+    statusColor: rgb(0, 217, 255),
   },
   busy: {
     indicator: rgb(255, 149, 0),
