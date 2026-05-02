@@ -97,7 +97,7 @@ import { AutoModeOptInDialog } from '../AutoModeOptInDialog.js';
 import { BridgeDialog } from '../BridgeDialog.js';
 import { ConfigurableShortcutHint } from '../ConfigurableShortcutHint.js';
 import { getVisibleAgentTasks, useCoordinatorTaskCount } from '../CoordinatorAgentStatus.js';
-import { getEffortNotificationText } from '../EffortIndicator.js';
+
 import { getFastIconString } from '../FastIcon.js';
 import { GlobalSearchDialog } from '../GlobalSearchDialog.js';
 import { HistorySearchDialog } from '../HistorySearchDialog.js';
@@ -1967,19 +1967,7 @@ function PromptInput({
   // Show effort notification on startup and when effort changes.
   // Suppressed in brief/assistant mode — the value reflects the local
   // client's effort, not the connected agent's.
-  const effortNotificationText = briefOwnsGap ? undefined : getEffortNotificationText(effortValue, mainLoopModel);
-  useEffect(() => {
-    if (!effortNotificationText) {
-      removeNotification('effort-level');
-      return;
-    }
-    addNotification({
-      key: 'effort-level',
-      text: effortNotificationText,
-      priority: 'high',
-      timeoutMs: 12_000
-    });
-  }, [effortNotificationText, addNotification, removeNotification]);
+  // Intentionally empty — effort display moved to footer permanently.
   useBuddyNotification();
   const companionSpeaking = feature('BUDDY') ?
   // biome-ignore lint/correctness/useHookAtTopLevel: feature() is a compile-time constant

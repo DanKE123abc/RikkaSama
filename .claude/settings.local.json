@@ -14,7 +14,8 @@
       "Bash(grep -rn \"getModel\\\\|modelName\\\\|model.*string\\\\|effortLevel\" C:/Users/15860/Desktop/RikkaSama/src/state/ --include=*.ts --include=*.tsx)",
       "Bash(grep -rn \"getModel\\\\|modelId\\\\|modelName\\\\|model.*string\" C:/Users/15860/Desktop/RikkaSama/src/types --include=*.ts)",
       "Bash(grep -rn \"effort\\\\|◐\\\\|statusBar\\\\|status.*line\\\\|footer\" C:/Users/15860/Desktop/RikkaSama/src/screens --include=*.ts --include=*.tsx)",
-      "Bash(grep -rn \"◐\\\\|effort.*pill\\\\|pill.*effort\\\\|status.*pill\\\\|model.*pill\" C:/Users/15860/Desktop/RikkaSama/src/components --include=*.ts --include=*.tsx)"
+      "Bash(grep -rn \"◐\\\\|effort.*pill\\\\|pill.*effort\\\\|status.*pill\\\\|model.*pill\" C:/Users/15860/Desktop/RikkaSama/src/components --include=*.ts --include=*.tsx)",
+      "Bash(grep -rn useMainLoopModel C:/Users/15860/Desktop/RikkaSama/src --include=*.ts --include=*.tsx)"
     ]
   }
 }
