@@ -1,5 +1,6 @@
 export type PermissionMode =
   | 'default'
+  | 'acceptAll'
   | 'acceptEdits'
   | 'bypassPermissions'
   | 'plan'

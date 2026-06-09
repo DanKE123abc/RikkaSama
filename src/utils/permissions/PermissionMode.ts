@@ -56,6 +56,13 @@ const PERMISSION_MODE_CONFIG: Partial<
     color: 'planMode',
     external: 'plan',
   },
+  acceptAll: {
+    title: 'Accept all',
+    shortTitle: 'Accept',
+    symbol: '⏵⏵',
+    color: 'error',
+    external: 'acceptAll',
+  },
   acceptEdits: {
     title: 'Accept edits',
     shortTitle: 'Accept',

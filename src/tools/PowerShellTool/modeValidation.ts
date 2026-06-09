@@ -145,7 +145,10 @@ export function checkPermissionMode(
     }
   }
 
-  if (toolPermissionContext.mode !== 'acceptEdits') {
+  if (
+    toolPermissionContext.mode !== 'acceptEdits' &&
+    toolPermissionContext.mode !== 'acceptAll'
+  ) {
     return {
       behavior: 'passthrough',
       message: 'No mode-specific validation required',

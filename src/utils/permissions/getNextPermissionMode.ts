@@ -50,6 +50,9 @@ export function getNextPermissionMode(
       return 'acceptEdits'
 
     case 'acceptEdits':
+      return 'acceptAll'
+
+    case 'acceptAll':
       return 'plan'
 
     case 'plan':

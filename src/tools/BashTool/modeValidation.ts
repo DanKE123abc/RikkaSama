@@ -73,8 +73,8 @@ export function checkPermissionMode(
   input: z.infer<typeof BashTool.inputSchema>,
   toolPermissionContext: ToolPermissionContext,
 ): PermissionResult {
-  // Skip if in bypass mode (handled elsewhere)
-  if (toolPermissionContext.mode === 'bypassPermissions') {
+  // Skip if in bypass or acceptAll mode (handled elsewhere)
+  if (toolPermissionContext.mode === 'bypassPermissions' || toolPermissionContext.mode === 'acceptAll') {
     return {
       behavior: 'passthrough',
       message: 'Bypass mode is handled in main permission flow',
