@@ -37,7 +37,7 @@ export function getNextPermissionMode(
 ): PermissionMode {
   switch (toolPermissionContext.mode) {
     case 'default':
-      // Ants skip acceptEdits and plan — auto mode replaces them
+      // Ants skip plan, acceptEdits and acceptAll — auto mode replaces them
       if (process.env.USER_TYPE === 'ant') {
         if (toolPermissionContext.isBypassPermissionsModeAvailable) {
           return 'bypassPermissions'
@@ -47,15 +47,15 @@ export function getNextPermissionMode(
         }
         return 'default'
       }
+      return 'plan'
+
+    case 'plan':
       return 'acceptEdits'
 
     case 'acceptEdits':
       return 'acceptAll'
 
     case 'acceptAll':
-      return 'plan'
-
-    case 'plan':
       if (toolPermissionContext.isBypassPermissionsModeAvailable) {
         return 'bypassPermissions'
       }
