@@ -1,11 +1,9 @@
 import { z } from 'zod/v4'
 import { buildTool, type ToolDef } from '../../Tool.js'
 import type { PermissionUpdate } from '../../types/permissions.js'
-import { formatFileSize } from '../../utils/format.js'
 import { lazySchema } from '../../utils/lazySchema.js'
 import type { PermissionDecision } from '../../utils/permissions/PermissionResult.js'
 import { getRuleByContentsForTool } from '../../utils/permissions/permissions.js'
-import { isPreapprovedHost } from './preapproved.js'
 import { DESCRIPTION, WEB_FETCH_TOOL_NAME } from './prompt.js'
 import {
   getToolUseSummary,
@@ -17,7 +15,6 @@ import {
   applyPromptToMarkdown,
   type FetchedContent,
   getURLMarkdownContent,
-  isPreapprovedUrl,
   MAX_MARKDOWN_LENGTH,
 } from './utils.js'
 
@@ -66,7 +63,6 @@ function webFetchToolInputToPermissionRuleContent(input: {
 export const WebFetchTool = buildTool({
   name: WEB_FETCH_TOOL_NAME,
   searchHint: 'fetch and extract content from a URL',
-  // 100K chars - tool result persistence threshold
   maxResultSizeChars: 100_000,
   shouldDefer: true,
   async description(input) {
@@ -105,22 +101,6 @@ export const WebFetchTool = buildTool({
     const appState = context.getAppState()
     const permissionContext = appState.toolPermissionContext
 
-    // Check if the hostname is in the preapproved list
-    try {
-      const { url } = input as { url: string }
-      const parsedUrl = new URL(url)
-      if (isPreapprovedHost(parsedUrl.hostname, parsedUrl.pathname)) {
-        return {
-          behavior: 'allow',
-          updatedInput: input,
-          decisionReason: { type: 'other', reason: 'Preapproved host' },
-        }
-      }
-    } catch {
-      // If URL parsing fails, continue with normal permission checks
-    }
-
-    // Check for a rule specific to the tool input (matching hostname)
     const ruleContent = webFetchToolInputToPermissionRuleContent(input)
 
     const denyRule = getRuleByContentsForTool(
@@ -179,12 +159,6 @@ export const WebFetchTool = buildTool({
     }
   },
   async prompt(_options) {
-    // Always include the auth warning regardless of whether ToolSearch is
-    // currently in the tools list. Conditionally toggling this prefix based
-    // on ToolSearch availability caused the tool description to flicker
-    // between SDK query() calls (when ToolSearch enablement varies due to
-    // MCP tool count thresholds), invalidating the Anthropic API prompt
-    // cache on each toggle — two consecutive cache misses per flicker event.
     return `IMPORTANT: WebFetch WILL FAIL for authenticated or private URLs. Before using this tool, check if the URL points to an authenticated service (e.g. Google Docs, Confluence, Jira, GitHub). If so, look for a specialized MCP tool that provides authenticated access.
 ${DESCRIPTION}`
   },
@@ -213,7 +187,6 @@ ${DESCRIPTION}`
 
     const response = await getURLMarkdownContent(url, abortController)
 
-    // Check if we got a redirect to a different host
     if ('type' in response && response.type === 'redirect') {
       const statusText =
         response.statusCode === 301
@@ -255,14 +228,10 @@ To complete your request, I need to fetch content from the redirected URL. Pleas
       codeText,
       contentType,
       persistedPath,
-      persistedSize,
     } = response as FetchedContent
-
-    const isPreapproved = isPreapprovedUrl(url)
 
     let result: string
     if (
-      isPreapproved &&
       contentType.includes('text/markdown') &&
       content.length < MAX_MARKDOWN_LENGTH
     ) {
@@ -273,15 +242,11 @@ To complete your request, I need to fetch content from the redirected URL. Pleas
         content,
         abortController.signal,
         isNonInteractiveSession,
-        isPreapproved,
       )
     }
 
-    // Binary content (PDFs, etc.) was additionally saved to disk with a
-    // mime-derived extension. Note it so Claude can inspect the raw file
-    // if the Haiku summary above isn't enough.
     if (persistedPath) {
-      result += `\n\n[Binary content (${contentType}, ${formatFileSize(persistedSize ?? bytes)}) also saved to ${persistedPath}]`
+      result += `\n\n[Binary content (${contentType}) also saved to ${persistedPath}]`
     }
 
     const output: Output = {
