@@ -1,3 +1,5 @@
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/DanKE123abc/RikkaSama)
+
 ## Requirements
 
 - [Bun](https://bun.sh) >= 1.3.11
@@ -73,5 +75,3 @@ src/
 | Code search       | ripgrep (bundled)                                  |
 | Protocols         | MCP, LSP                                           |
 | API               | Anthropic Messages API                             |
-
-
