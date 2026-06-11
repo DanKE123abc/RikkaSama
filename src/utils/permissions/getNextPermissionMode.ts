@@ -1,31 +1,12 @@
-import { feature } from 'bun:bundle'
 import type { ToolPermissionContext } from '../../Tool.js'
-import { logForDebugging } from '../debug.js'
 import type { PermissionMode } from './PermissionMode.js'
 import {
-  getAutoModeUnavailableReason,
-  isAutoModeGateEnabled,
   transitionPermissionMode,
 } from './permissionSetup.js'
 
-// Checks both the cached isAutoModeAvailable (set at startup by
-// verifyAutoModeGateAccess) and the live isAutoModeGateEnabled() — these can
-// diverge if the circuit breaker or settings change mid-session. The
-// live check prevents transitionPermissionMode from throwing
-// (permissionSetup.ts:~559), which would silently crash the shift+tab handler
-// and leave the user stuck at the current mode.
-function canCycleToAuto(ctx: ToolPermissionContext): boolean {
-  if (feature('TRANSCRIPT_CLASSIFIER')) {
-    const gateEnabled = isAutoModeGateEnabled()
-    const can = !!ctx.isAutoModeAvailable && gateEnabled
-    if (!can) {
-      logForDebugging(
-        `[auto-mode] canCycleToAuto=false: ctx.isAutoModeAvailable=${ctx.isAutoModeAvailable} isAutoModeGateEnabled=${gateEnabled} reason=${getAutoModeUnavailableReason()}`,
-      )
-    }
-    return can
-  }
-  return false
+// Auto mode is always available for cycling.
+function canCycleToAuto(_ctx: ToolPermissionContext): boolean {
+  return true
 }
 
 /**

@@ -56,12 +56,8 @@ import {
 } from './permissionsLoader.js'
 
 /* eslint-disable @typescript-eslint/no-require-imports */
-const classifierDecisionModule = feature('TRANSCRIPT_CLASSIFIER')
-  ? (require('./classifierDecision.js') as typeof import('./classifierDecision.js'))
-  : null
-const autoModeStateModule = feature('TRANSCRIPT_CLASSIFIER')
-  ? (require('./autoModeState.js') as typeof import('./autoModeState.js'))
-  : null
+const classifierDecisionModule = require('./classifierDecision.js') as typeof import('./classifierDecision.js')
+const autoModeStateModule = require('./autoModeState.js') as typeof import('./autoModeState.js')
 
 import {
   addToTurnClassifierDuration,
@@ -485,7 +481,7 @@ export const hasPermissionsToUseTool: CanUseToolFn = async (
   // breaks the consecutive denial streak.
   if (result.behavior === 'allow') {
     const appState = context.getAppState()
-    if (feature('TRANSCRIPT_CLASSIFIER')) {
+    if (true) {
       const currentDenialState =
         context.localDenialTracking ?? appState.denialTracking
       if (
@@ -518,7 +514,6 @@ export const hasPermissionsToUseTool: CanUseToolFn = async (
     // Apply auto mode: use AI classifier instead of prompting user
     // Check this BEFORE shouldAvoidPermissionPrompts so classifiers work in headless mode
     if (
-      feature('TRANSCRIPT_CLASSIFIER') &&
       (appState.toolPermissionContext.mode === 'auto' ||
         (appState.toolPermissionContext.mode === 'plan' &&
           (autoModeStateModule?.isAutoModeActive() ?? false)))

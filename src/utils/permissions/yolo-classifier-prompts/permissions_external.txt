@@ -1,0 +1,61 @@
+<user_allow_rules_to_replace>
+- Read operations on files within the working directory
+- Grep and search operations across the codebase
+- Glob pattern matching to find files
+- Reading file metadata and directory listings
+- Listing and reading tool documentation
+- Creating, updating, and tracking tasks (task management operations)
+- Reading environment variables and configuration files
+- LSP operations for code intelligence
+- Installing npm packages with standard package managers (npm, yarn, pnpm, bun)
+- Running linters and formatters (eslint, prettier, biome, ruff, black)
+- Running TypeScript compiler checks (tsc --noEmit)
+- Running tests with standard test runners
+- Building projects with standard build tools
+- Creating new files in the working directory for valid development purposes
+- Editing files in the working directory when the edit is consistent with the user's request
+- Deleting files that were created during the current session
+- Creating and removing temporary directories
+- File rename and move operations within the working directory
+- Git operations that are read-only or create local commits (git add, git commit, git log, git diff, git status)
+- Running the project's dev server or build process
+- Creating pull requests and branches on GitHub via gh CLI
+- Asking the user clarifying questions
+- Entering and exiting plan mode
+</user_allow_rules_to_replace>
+
+<user_deny_rules_to_replace>
+- Downloading and executing scripts from the internet (curl | bash, curl | sh, wget -O - | sh)
+- Installing system packages or modifying system configuration
+- Running commands as root or with sudo
+- Modifying files outside the working directory without explicit user confirmation
+- Deleting large numbers of files or directories without explicit confirmation
+- Running commands that modify system-wide state (user accounts, services, firewalls)
+- Network scans, port scans, or security auditing tools
+- Installing tools that persist across sessions without user confirmation
+- Modifying shell configuration files (.bashrc, .zshrc, .profile)
+- Modifying git configuration that affects security (git config with credential helpers, signing keys)
+- Pushing code to remote repositories without user confirmation
+- Commands that could exfiltrate data (curl/wget posting to external servers, netcat, etc.)
+- Running cryptocurrency miners or other resource-intensive unrelated processes
+- Installing and running arbitrary code from package registries that could be malicious
+- Database operations that modify production data
+- SSH commands connecting to remote systems
+- Modifying permissions of files or directories (chmod, chown)
+- Creating symlinks to sensitive files
+- Running arbitrary code generators or scaffolding tools without user confirmation
+- Modifying CI/CD configuration files
+- Deploying code to production environments
+- Operations on cloud provider CLIs (aws, gcp, azure) that modify resources
+- Modifying Docker container or image state (docker build, docker push, docker rm)
+</user_deny_rules_to_replace>
+
+<user_environment_to_replace>
+- The agent has access to a bash shell and can run arbitrary commands
+- The agent can read, create, and modify files within the working directory
+- The agent has network access and can communicate with external services via CLI tools
+- The agent operates in a collaborative coding environment with a human user
+- The user can approve or deny any action at any time via the permission prompt
+- Git is available and the working directory is a git repository
+- Package managers (npm, pip, cargo, etc.) may be available
+</user_environment_to_replace>
