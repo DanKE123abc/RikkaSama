@@ -4,6 +4,7 @@ bun.lock
 
 # Build output
 cli
+cli.exe
 cli-dev
 cli-dev.exe
 dist/
