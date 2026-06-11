@@ -5,8 +5,9 @@ import {
 } from './permissionSetup.js'
 
 // Auto mode is always available for cycling.
+// 这个功能太鸡肋了
 function canCycleToAuto(_ctx: ToolPermissionContext): boolean {
-  return true
+  return false
 }
 
 /**
