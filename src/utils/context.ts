@@ -2,6 +2,7 @@
 import { CONTEXT_1M_BETA_HEADER } from '../constants/betas.js'
 import { getGlobalConfig } from './config.js'
 import { isEnvTruthy } from './envUtils.js'
+import { loadConfig } from './jsonConfig.js'
 import { getCanonicalName } from './model/model.js'
 import { getModelCapability } from './model/modelCapabilities.js'
 
@@ -52,6 +53,19 @@ export function getContextWindowForModel(
   model: string,
   betas?: string[],
 ): number {
+  // Allow override via data/config.json modelContextWindows (highest priority)
+  // Uses substring matching so e.g. "deepseek-v4" matches "deepseek-v4-pro"
+  // and "deepseek-v4-flash". First match wins.
+  const jsonConfig = loadConfig()
+  const overrides = jsonConfig.modelContextWindows
+  if (overrides) {
+    for (const [key, value] of Object.entries(overrides)) {
+      if (model.includes(key) && value > 0) {
+        return value
+      }
+    }
+  }
+
   // Allow override via environment variable (ant-only)
   // This takes precedence over all other context window resolution, including 1M detection,
   // so users can cap the effective context window for local decisions (auto-compact, etc.)

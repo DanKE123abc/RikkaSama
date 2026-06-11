@@ -23,7 +23,12 @@ export interface JsonConfig {
   
   // 自定义模型列表（覆盖内置模型）
   model_list?: string[]
-  
+
+  // 每个模型的最大上下文窗口覆盖（token 数）
+  // key 是模型名称子串（如 "deepseek-v4" 匹配 "deepseek-v4-pro" 和 "deepseek-v4-flash"），
+  // value 是最大上下文窗口 token 数。按 Object.entries() 遍历顺序匹配，首个匹配生效。
+  modelContextWindows?: Record<string, number>
+
   // 云服务提供商配置
   CLAUDE_CODE_USE_BEDROCK?: boolean
   CLAUDE_CODE_USE_VERTEX?: boolean
