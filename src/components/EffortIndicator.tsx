@@ -45,31 +45,10 @@ export function effortLevelToSymbol(level: EffortLevel): string {
   }
 }
 
-const BAR_WIDTH = 10
-const FILLED = '\u2588'
-const EMPTY = '\u2591'
-
-function buildHealthBar(percent: number): string {
-  const filled = Math.round((percent / 100) * BAR_WIDTH)
-  return (
-    FILLED.repeat(filled) + EMPTY.repeat(BAR_WIDTH - filled) + `${percent}%`
-  )
-}
-
-type EffortIndicatorProps = {
-  contextHealth?: number | null
-}
-
-export function EffortIndicator({
-  contextHealth,
-}: EffortIndicatorProps): React.ReactNode {
+export function EffortIndicator(): React.ReactNode {
   const effortValue = useAppState((s) => s.effortValue)
   const mainLoopModel = useMainLoopModel()
   const text = getEffortNotificationText(effortValue, mainLoopModel)
   if (!text) return null
-  if (contextHealth != null) {
-    const bar = buildHealthBar(contextHealth)
-    return <Text wrap="truncate">{text}|{bar}</Text>
-  }
   return <Text wrap="truncate">{text}</Text>
 }
