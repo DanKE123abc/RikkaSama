@@ -306,11 +306,14 @@ function getModelOptionsBase(fastMode = false): ModelOption[] {
   
   if (customModelList && Array.isArray(customModelList) && customModelList.length > 0) {
     // Use custom model list from config.json
-    return customModelList.map(modelName => ({
-      value: modelName,
-      label: modelName,
-      description: '',
-    }))
+    return [
+      getDefaultOptionForUser(fastMode),
+      ...customModelList.map(modelName => ({
+        value: modelName,
+        label: modelName,
+        description: 'from your config',
+      })),
+    ]
   }
   
   if (process.env.USER_TYPE === 'ant') {
@@ -322,6 +325,7 @@ function getModelOptionsBase(fastMode = false): ModelOption[] {
     }))
 
     return [
+      getDefaultOptionForUser(),
       ...antModelOptions,
       getMergedOpus1MOption(fastMode),
       getSonnet46Option(),
@@ -333,7 +337,7 @@ function getModelOptionsBase(fastMode = false): ModelOption[] {
   if (isClaudeAISubscriber()) {
     if (isMaxSubscriber() || isTeamPremiumSubscriber()) {
       // Max and Team Premium users: Opus is default, show Sonnet as alternative
-      const premiumOptions = []
+      const premiumOptions = [getDefaultOptionForUser(fastMode)]
       if (!isOpus1mMergeEnabled() && checkOpus1mAccess()) {
         premiumOptions.push(getMaxOpus46_1MOption(fastMode))
       }
@@ -348,7 +352,7 @@ function getModelOptionsBase(fastMode = false): ModelOption[] {
     }
 
     // Pro/Team Standard/Enterprise users: Sonnet is default, show Opus as alternative
-    const standardOptions = []
+    const standardOptions = [getDefaultOptionForUser(fastMode)]
     if (checkSonnet1mAccess()) {
       standardOptions.push(getMaxSonnet46_1MOption())
     }
@@ -366,9 +370,9 @@ function getModelOptionsBase(fastMode = false): ModelOption[] {
     return standardOptions
   }
 
-  // PAYG 1P API: Sonnet + Sonnet 1M + Opus 4.6 + Opus 1M + Haiku
+  // PAYG 1P API: Default (Sonnet) + Sonnet 1M + Opus 4.6 + Opus 1M + Haiku
   if (getAPIProvider() === 'firstParty') {
-    const payg1POptions = []
+    const payg1POptions = [getDefaultOptionForUser(fastMode)]
     if (checkSonnet1mAccess()) {
       payg1POptions.push(getSonnet46_1MOption())
     }
@@ -384,8 +388,8 @@ function getModelOptionsBase(fastMode = false): ModelOption[] {
     return payg1POptions
   }
 
-  // PAYG 3P: Sonnet (3P custom) or Sonnet 4.6/1M + Opus (3P custom) or Opus 4.1/Opus 4.6/Opus1M + Haiku + Opus 4.1
-  const payg3pOptions = []
+  // PAYG 3P: Default (Sonnet 4.5) + Sonnet (3P custom) or Sonnet 4.6/1M + Opus (3P custom) or Opus 4.1/Opus 4.6/Opus1M + Haiku + Opus 4.1
+  const payg3pOptions = [getDefaultOptionForUser(fastMode)]
 
   const customSonnet = getCustomSonnetOption()
   if (customSonnet !== undefined) {

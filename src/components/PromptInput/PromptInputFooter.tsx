@@ -17,6 +17,11 @@ import type { PromptInputMode, VimMode } from '../../types/textInputTypes.js';
 import type { AutoUpdaterResult } from '../../utils/autoUpdater.js';
 import { isFullscreenEnvEnabled } from '../../utils/fullscreen.js';
 import { isUndercover } from '../../utils/undercover.js';
+import { useMainLoopModel } from '../../hooks/useMainLoopModel.js';
+import { getSdkBetas } from '../../bootstrap/state.js';
+import { tokenCountFromLastAPIResponse } from '../../utils/tokens.js';
+import { getMessagesAfterCompactBoundary } from '../../utils/messages.js';
+import { calculateContextPercentages, getContextWindowForModel } from '../../utils/context.js';
 import { EffortIndicator } from '../EffortIndicator.js';
 import { CoordinatorTaskPanel, useCoordinatorTaskCount } from '../CoordinatorAgentStatus.js';
 import { getLastAssistantMessageId, StatusLine, statusLineShouldDisplay } from '../StatusLine.js';
@@ -103,6 +108,23 @@ function PromptInputFooter({
   const messagesRef = useRef(messages);
   messagesRef.current = messages;
   const lastAssistantMessageId = useMemo(() => getLastAssistantMessageId(messages), [messages]);
+  const mainLoopModel = useMainLoopModel();
+  const contextHealth = useMemo(() => {
+    const msgsForToken = getMessagesAfterCompactBoundary(messages);
+    const tokenUsage = tokenCountFromLastAPIResponse(msgsForToken);
+    const contextWindow = getContextWindowForModel(mainLoopModel, getSdkBetas());
+    const { used } = calculateContextPercentages(
+      tokenUsage > 0
+        ? {
+            input_tokens: tokenUsage,
+            cache_creation_input_tokens: 0,
+            cache_read_input_tokens: 0,
+          }
+        : null,
+      contextWindow,
+    );
+    return used;
+  }, [messages, mainLoopModel]);
   const isNarrow = columns < 80;
   // In fullscreen the bottom slot is flexShrink:0, so every row here is a row
   // stolen from the ScrollBox. Drop the optional StatusLine first. Non-fullscreen
@@ -145,7 +167,7 @@ function PromptInputFooter({
         <Box flexShrink={1} gap={1}>
           {isFullscreen ? null : <Notifications apiKeyStatus={apiKeyStatus} autoUpdaterResult={autoUpdaterResult} debug={debug} isAutoUpdating={isAutoUpdating} verbose={verbose} messages={messages} onAutoUpdaterResult={onAutoUpdaterResult} onChangeIsUpdating={onChangeIsUpdating} ideSelection={ideSelection} mcpClients={mcpClients} isInputWrapped={isInputWrapped} isNarrow={isNarrow} />}
           {"external" === 'ant' && isUndercover() && <Text dimColor>undercover</Text>}
-           <EffortIndicator />
+          <EffortIndicator contextHealth={contextHealth} />
           <BridgeStatusIndicator bridgeSelected={bridgeSelected} />
         </Box>
       </Box>
