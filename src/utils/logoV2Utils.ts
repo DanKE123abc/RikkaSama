@@ -258,7 +258,7 @@ export function getLogoDisplayData(): {
     : displayPath
   const billingType = isClaudeAISubscriber()
     ? getSubscriptionName()
-    : 'API'
+    : ''
   const agentName = getInitialSettings().agent
 
   return {
@@ -282,9 +282,11 @@ export function formatModelAndBilling(
   truncatedBilling: string
 } {
   const separator = ' · '
+  const hasBilling = billingType.length > 0
   const combinedWidth =
-    stringWidth(modelName) + separator.length + stringWidth(billingType)
-  const shouldSplit = combinedWidth > availableWidth
+    stringWidth(modelName) +
+    (hasBilling ? separator.length + stringWidth(billingType) : 0)
+  const shouldSplit = hasBilling && combinedWidth > availableWidth
 
   if (shouldSplit) {
     return {
@@ -298,10 +300,12 @@ export function formatModelAndBilling(
     shouldSplit: false,
     truncatedModel: truncate(
       modelName,
-      Math.max(
-        availableWidth - stringWidth(billingType) - separator.length,
-        10,
-      ),
+      hasBilling
+        ? Math.max(
+            availableWidth - stringWidth(billingType) - separator.length,
+            10,
+          )
+        : availableWidth,
     ),
     truncatedBilling: billingType,
   }

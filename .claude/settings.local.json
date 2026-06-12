@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -rn \"· API\\\\|·API\\\\|displayName\\\\|model.*name\\\\|''''API''''\" --include=*.ts --include=*.tsx src/)",
+      "Bash(grep -rn · --include=*.ts --include=*.tsx src/)",
+      "Bash(grep -rn API --include=*.ts --include=*.tsx src/)"
+    ]
+  }
+}

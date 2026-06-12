@@ -329,7 +329,13 @@ export function LogoV2() {
     return <><OffscreenFreeze><Box flexDirection="column" borderStyle="round" borderColor="startupAccent" borderText={t11} paddingX={1} paddingY={1} alignItems="center" width={columns}><Text bold={true}>{welcomeMessage}</Text>{t12}{t13}<Text dimColor={true}>{billingType}</Text><Text dimColor={true}>{agentName ? `@${agentName} · ${truncatedCwd}` : truncatedCwd}</Text></Box></OffscreenFreeze>{t14}{t15}{t16}{t17}{t18}{t19}</>;
   }
   const welcomeMessage_0 = formatWelcomeMessage(username);
-  const modelLine = !process.env.IS_DEMO && config.oauthAccount?.organizationName ? `${modelDisplayName} · ${billingType} · ${config.oauthAccount.organizationName}` : `${modelDisplayName} · ${billingType}`;
+  const modelLine = !process.env.IS_DEMO && config.oauthAccount?.organizationName
+    ? billingType
+      ? `${modelDisplayName} · ${billingType} · ${config.oauthAccount.organizationName}`
+      : `${modelDisplayName} · ${config.oauthAccount.organizationName}`
+    : billingType
+      ? `${modelDisplayName} · ${billingType}`
+      : modelDisplayName;
   const cwdAvailableWidth_0 = agentName ? LEFT_PANEL_MAX_WIDTH - 1 - stringWidth(agentName) - 3 : LEFT_PANEL_MAX_WIDTH;
   const truncatedCwd_0 = truncatePath(cwd, Math.max(cwdAvailableWidth_0, 10));
   const cwdLine = agentName ? `@${agentName} · ${truncatedCwd_0}` : truncatedCwd_0;
