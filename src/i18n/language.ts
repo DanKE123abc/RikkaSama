@@ -1,6 +1,7 @@
 import { getInitialSettings } from '../utils/settings/settings.js'
 import { spinnerVerbs_zh , spinnerVerbs_en } from './language/spinnerVerbs'
 import { turnCompletionVerbs_zh , turnCompletionVerbs_en } from './language/turnCompletionVerbs'
+import * as tips from './language/tips'
 
 export type LanguageCode = 'en' | 'zh' ;
 
@@ -37,4 +38,31 @@ export function getSpinnerVerbs(): string[] {
 export function getTurnCompletionVerbs(): string[] {
   return defaultLanguage === 'zh' ? turnCompletionVerbs_zh : turnCompletionVerbs_en
 }
+
+type TipTranslationReplacements = Record<string, string>
+
+function formatTipTranslation(
+  template: string,
+  replacements?: TipTranslationReplacements,
+): string {
+  if (!replacements) {
+    return template
+  }
+
+  return Object.entries(replacements).reduce(
+    (current, [name, value]) =>
+      current.replace(new RegExp(`\\{${name}\\}`, 'g'), value),
+    template,
+  )
+}
+
+export function getTipTranslation(
+  key: tips.TipTranslationKey,
+  replacements?: TipTranslationReplacements,
+): string {
+  const template = defaultLanguage === 'zh' ? tips.tips_zh[key] : tips.tips_en[key]
+  return formatTipTranslation(template, replacements)
+}
+
+
 
