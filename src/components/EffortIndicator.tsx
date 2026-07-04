@@ -67,12 +67,29 @@ export function EffortIndicator({
 }: EffortIndicatorProps): React.ReactNode {
   const effortValue = useAppState((s) => s.effortValue)
   const mainLoopModel = useMainLoopModel()
-  const text = getEffortNotificationText(effortValue, mainLoopModel)
-  if (!text) return null
+  const effortText = getEffortNotificationText(effortValue, mainLoopModel)
+
+  // Build speed prefix
   const speedPrefix = tokenSpeed && tokenSpeed > 0 ? `${tokenSpeed}t/s ` : ''
-  if (contextHealth != null) {
-    const bar = buildHealthBar(contextHealth)
-    return <Text wrap="truncate">{speedPrefix}{text}|{bar}</Text>
+
+  // If effort is supported, use the existing format with effort text
+  if (effortText) {
+    if (contextHealth != null) {
+      const bar = buildHealthBar(contextHealth)
+      return <Text wrap="truncate">{speedPrefix}{effortText}|{bar}</Text>
+    }
+    return <Text wrap="truncate">{speedPrefix}{effortText}</Text>
   }
-  return <Text wrap="truncate">{speedPrefix}{text}</Text>
+
+  // For models without effort support: show model name + context health + token speed
+  // when there's session data (contextHealth or tokenSpeed available)
+  if (contextHealth != null || (tokenSpeed && tokenSpeed > 0)) {
+    const parts: string[] = [speedPrefix, mainLoopModel]
+    if (contextHealth != null) {
+      parts.push(buildHealthBar(contextHealth))
+    }
+    return <Text wrap="truncate">{parts.join('|')}</Text>
+  }
+
+  return null
 }

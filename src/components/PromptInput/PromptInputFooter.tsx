@@ -19,7 +19,7 @@ import { isFullscreenEnvEnabled } from '../../utils/fullscreen.js';
 import { isUndercover } from '../../utils/undercover.js';
 import { useMainLoopModel } from '../../hooks/useMainLoopModel.js';
 import { getSdkBetas } from '../../bootstrap/state.js';
-import { tokenCountFromLastAPIResponse } from '../../utils/tokens.js';
+import { tokenCountWithEstimation } from '../../utils/tokens.js';
 import { getMessagesAfterCompactBoundary } from '../../utils/messages.js';
 import { calculateContextPercentages, getContextWindowForModel } from '../../utils/context.js';
 import { EffortIndicator } from '../EffortIndicator.js';
@@ -112,7 +112,7 @@ function PromptInputFooter({
   const mainLoopModel = useMainLoopModel();
   const contextHealth = useMemo(() => {
     const msgsForToken = getMessagesAfterCompactBoundary(messages);
-    const tokenUsage = tokenCountFromLastAPIResponse(msgsForToken);
+    const tokenUsage = tokenCountWithEstimation(msgsForToken);
     const contextWindow = getContextWindowForModel(mainLoopModel, getSdkBetas());
     const { used } = calculateContextPercentages(
       tokenUsage > 0

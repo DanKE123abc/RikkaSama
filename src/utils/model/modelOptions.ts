@@ -13,6 +13,7 @@ import {
   formatModelPricing,
 } from '../modelCost.js'
 import { getSettings_DEPRECATED } from '../settings/settings.js'
+import { formatNumber } from '../format.js'
 import { checkOpus1mAccess, checkSonnet1mAccess } from './check1mAccess.js'
 import { getAPIProvider } from './providers.js'
 import { isModelAllowed } from './modelAllowlist.js'
@@ -306,13 +307,20 @@ function getModelOptionsBase(fastMode = false): ModelOption[] {
   
   if (customModelList && Array.isArray(customModelList) && customModelList.length > 0) {
     // Use custom model list from config.json
+    const contextWindows = config.modelContextWindows
     return [
       getDefaultOptionForUser(fastMode),
-      ...customModelList.map(modelName => ({
-        value: modelName,
-        label: modelName,
-        description: 'from your config',
-      })),
+      ...customModelList.map(modelName => {
+        const windowSize = contextWindows?.[modelName]
+        const description = windowSize
+          ? `${formatNumber(windowSize)} context`
+          : modelName
+        return {
+          value: modelName,
+          label: modelName,
+          description,
+        }
+      }),
     ]
   }
   
