@@ -74,9 +74,6 @@ const remoteControlServerCommand =
   feature('DAEMON') && feature('BRIDGE_MODE')
     ? require('./commands/remoteControlServer/index.js').default
     : null
-const voiceCommand = feature('VOICE_MODE')
-  ? require('./commands/voice/index.js').default
-  : null
 const forceSnip = feature('HISTORY_SNIP')
   ? require('./commands/force-snip.js').default
   : null
@@ -110,11 +107,6 @@ const peersCmd = feature('UDS_INBOX')
 const forkCmd = feature('FORK_SUBAGENT')
   ? (
       require('./commands/fork/index.js') as typeof import('./commands/fork/index.js')
-    ).default
-  : null
-const buddy = feature('BUDDY')
-  ? (
-      require('./commands/buddy/index.js') as typeof import('./commands/buddy/index.js')
     ).default
   : null
 /* eslint-enable @typescript-eslint/no-require-imports */
@@ -309,13 +301,11 @@ const COMMANDS = memoize((): Command[] => [
   vim,
   ...(webCmd ? [webCmd] : []),
   ...(forkCmd ? [forkCmd] : []),
-  ...(buddy ? [buddy] : []),
   ...(proactive ? [proactive] : []),
   ...(briefCommand ? [briefCommand] : []),
   ...(assistantCommand ? [assistantCommand] : []),
   ...(bridge ? [bridge] : []),
   ...(remoteControlServerCommand ? [remoteControlServerCommand] : []),
-  ...(voiceCommand ? [voiceCommand] : []),
   thinkback,
   thinkbackPlay,
   permissions,

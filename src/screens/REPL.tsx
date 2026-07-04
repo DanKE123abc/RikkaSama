@@ -95,12 +95,6 @@ import { isHumanTurn } from '../utils/messagePredicates.js';
 import { logError } from '../utils/log.js';
 // Dead code elimination: conditional imports
 /* eslint-disable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports */
-const useVoiceIntegration: typeof import('../hooks/useVoiceIntegration.js').useVoiceIntegration = feature('VOICE_MODE') ? require('../hooks/useVoiceIntegration.js').useVoiceIntegration : () => ({
-  stripTrailing: () => 0,
-  handleKeyEvent: () => {},
-  resetAnchor: () => {}
-});
-const VoiceKeybindingHandler: typeof import('../hooks/useVoiceIntegration.js').VoiceKeybindingHandler = feature('VOICE_MODE') ? require('../hooks/useVoiceIntegration.js').VoiceKeybindingHandler : () => null;
 // Frustration detection is ant-only (dogfooding). Conditional require so external
 // builds eliminate the module entirely (including its two O(n) useMemos that run
 // on every messages change, plus the GrowthBook fetch).
@@ -275,7 +269,6 @@ const launchUltraplan: typeof import('../commands/ultraplan.js').launchUltraplan
 /* eslint-enable @typescript-eslint/no-require-imports */
 import { IssueFlagBanner } from '../components/PromptInput/IssueFlagBanner.js';
 import { useIssueFlagBanner } from '../hooks/useIssueFlagBanner.js';
-import { CompanionSprite, CompanionFloatingBubble, MIN_COLS_FOR_FULL_SPRITE } from '../buddy/CompanionSprite.js';
 import { DevBar } from '../components/DevBar.js';
 // Session manager removed - using AppState now
 import type { RemoteSessionConfig } from '../remote/RemoteSessionManager.js';
@@ -1297,16 +1290,7 @@ export function REPL({
     } else {
       onScrollAway(handle);
       if (feature('KAIROS')) maybeLoadOlder(handle);
-      // Dismiss the companion bubble on scroll — it's absolute-positioned
-      // at bottom-right and covers transcript content. Scrolling = user is
-      // trying to read something under it.
-      if (feature('BUDDY')) {
-        setAppState(prev => prev.companionReaction === undefined ? prev : {
-          ...prev,
-          companionReaction: undefined
-        });
       }
-    }
   }, [onRepin, onScrollAway, maybeLoadOlder, setAppState]);
   // Deferred SessionStart hook messages — REPL renders immediately and
   // hook messages are injected when they resolve. awaitPendingHooks()
@@ -2802,12 +2786,6 @@ export function REPL({
     })) {
       onQueryEvent(event);
     }
-    if (feature('BUDDY')) {
-      void fireCompanionObserver(messagesRef.current, reaction => setAppState(prev => prev.companionReaction === reaction ? prev : {
-        ...prev,
-        companionReaction: reaction
-      }));
-    }
     queryCheckpoint('query_end');
 
     // Capture ant-only API metrics before resetLoadingState clears the ref.
@@ -4019,20 +3997,7 @@ export function REPL({
     return true;
   }, [onQuery, mainLoopModel, store]);
 
-  // Voice input integration (VOICE_MODE builds only)
-  const voice = feature('VOICE_MODE') ?
-  // biome-ignore lint/correctness/useHookAtTopLevel: feature() is a compile-time constant
-  useVoiceIntegration({
-    setInputValueRaw,
-    inputValueRef,
-    insertTextRef
-  }) : {
-    stripTrailing: () => 0,
-    handleKeyEvent: () => {},
-    resetAnchor: () => {},
-    interimRange: null
-  };
-  useInboxPoller({
+    useInboxPoller({
     enabled: isAgentSwarmsEnabled(),
     isLoading,
     focusedInputDialog,
@@ -4407,7 +4372,6 @@ export function REPL({
     const transcriptReturn = <KeybindingSetup>
         <AnimatedTerminalTitle isAnimating={titleIsAnimating} title={terminalTitle} disabled={titleDisabled} noPrefix={showStatusInTerminalTab} />
         <GlobalKeybindingHandlers {...globalKeybindingProps} />
-        {feature('VOICE_MODE') ? <VoiceKeybindingHandler voiceHandleKeyEvent={voice.handleKeyEvent} stripTrailing={voice.stripTrailing} resetAnchor={voice.resetAnchor} isActive={!toolJSX?.isLocalJSXCommand} /> : null}
         <CommandKeybindingHandlers onSubmit={onSubmit} isActive={!toolJSX?.isLocalJSXCommand} />
         {transcriptScrollRef ?
       // ScrollKeybindingHandler must mount before CancelRequestHandler so
@@ -4519,18 +4483,7 @@ export function REPL({
   const placeholderText = userInputOnProcessing && !viewedAgentTask && displayedMessages.length <= userInputBaselineRef.current ? userInputOnProcessing : undefined;
   const toolPermissionOverlay = focusedInputDialog === 'tool-permission' ? <PermissionRequest key={toolUseConfirmQueue[0]?.toolUseID} onDone={() => setToolUseConfirmQueue(([_, ...tail]) => tail)} onReject={handleQueuedCommandOnCancel} toolUseConfirm={toolUseConfirmQueue[0]!} toolUseContext={getToolUseContext(messages, messages, abortController ?? createAbortController(), mainLoopModel)} verbose={verbose} workerBadge={toolUseConfirmQueue[0]?.workerBadge} setStickyFooter={isFullscreenEnvEnabled() ? setPermissionStickyFooter : undefined} /> : null;
 
-  // Narrow terminals: companion collapses to a one-liner that REPL stacks
-  // on its own row (above input in fullscreen, below in scrollback) instead
-  // of row-beside. Wide terminals keep the row layout with sprite on the right.
-  const companionNarrow = transcriptCols < MIN_COLS_FOR_FULL_SPRITE;
-  // Hide the sprite when PromptInput early-returns BackgroundTasksDialog.
-  // The sprite sits as a row sibling of PromptInput, so the dialog's Pane
-  // divider draws at useTerminalSize() width but only gets terminalWidth -
-  // spriteWidth — divider stops short and dialog text wraps early. Don't
-  // check footerSelection: pill FOCUS (arrow-down to tasks pill) must keep
-  // the sprite visible so arrow-right can navigate to it.
-  const companionVisible = !toolJSX?.shouldHidePromptInput && !focusedInputDialog && !showBashesDialog;
-
+  
   // In fullscreen, ALL local-jsx slash commands float in the modal slot —
   // FullscreenLayout wraps them in an absolute-positioned bottom-anchored
   // pane (▔ divider, ModalContext). Pane/Dialog inside detect the context
@@ -4549,7 +4502,6 @@ export function REPL({
   const mainReturn = <KeybindingSetup>
       <AnimatedTerminalTitle isAnimating={titleIsAnimating} title={terminalTitle} disabled={titleDisabled} noPrefix={showStatusInTerminalTab} />
       <GlobalKeybindingHandlers {...globalKeybindingProps} />
-      {feature('VOICE_MODE') ? <VoiceKeybindingHandler voiceHandleKeyEvent={voice.handleKeyEvent} stripTrailing={voice.stripTrailing} resetAnchor={voice.resetAnchor} isActive={!toolJSX?.isLocalJSXCommand} /> : null}
       <CommandKeybindingHandlers onSubmit={onSubmit} isActive={!toolJSX?.isLocalJSXCommand} />
       {/* ScrollKeybindingHandler must mount before CancelRequestHandler so
           ctrl+c-with-selection copies instead of cancelling the active task.
@@ -4563,7 +4515,7 @@ export function REPL({
       {feature('MESSAGE_ACTIONS') && isFullscreenEnvEnabled() && !disableMessageActions ? <MessageActionsKeybindings handlers={messageActionHandlers} isActive={cursor !== null} /> : null}
       <CancelRequestHandler {...cancelRequestProps} />
       <MCPConnectionManager key={remountKey} dynamicMcpConfig={dynamicMcpConfig} isStrictMcpConfig={strictMcpConfig}>
-        <FullscreenLayout scrollRef={scrollRef} overlay={toolPermissionOverlay} bottomFloat={feature('BUDDY') && companionVisible && !companionNarrow ? <CompanionFloatingBubble /> : undefined} modal={centeredModal} modalScrollRef={modalScrollRef} dividerYRef={dividerYRef} hidePill={!!viewedAgentTask} hideSticky={!!viewedTeammateTask} newMessageCount={unseenDivider?.count ?? 0} onPillClick={() => {
+        <FullscreenLayout scrollRef={scrollRef} overlay={toolPermissionOverlay} bottomFloat={undefined} modal={centeredModal} modalScrollRef={modalScrollRef} dividerYRef={dividerYRef} hidePill={!!viewedAgentTask} hideSticky={!!viewedTeammateTask} newMessageCount={unseenDivider?.count ?? 0} onPillClick={() => {
         setCursor(null);
         jumpToNew(scrollRef.current);
       }} scrollable={<>
@@ -4588,8 +4540,7 @@ export function REPL({
               {showSpinner && <SpinnerWithVerb mode={streamMode} spinnerTip={spinnerTip} responseLengthRef={responseLengthRef} apiMetricsRef={apiMetricsRef} overrideMessage={spinnerMessage} spinnerSuffix={stopHookSpinnerSuffix} verbose={verbose} loadingStartTimeRef={loadingStartTimeRef} totalPausedMsRef={totalPausedMsRef} pauseStartTimeRef={pauseStartTimeRef} overrideColor={spinnerColor} overrideShimmerColor={spinnerShimmerColor} hasActiveTools={inProgressToolUseIDs.size > 0} leaderIsIdle={!isLoading} />}
               {!showSpinner && !isLoading && !userInputOnProcessing && !hasRunningTeammates && isBriefOnly && !viewedAgentTask && <BriefIdleStatus />}
               {isFullscreenEnvEnabled() && <PromptInputQueuedCommands />}
-            </>} bottom={<Box flexDirection={feature('BUDDY') && companionNarrow ? 'column' : 'row'} width="100%" alignItems={feature('BUDDY') && companionNarrow ? undefined : 'flex-end'}>
-              {feature('BUDDY') && companionNarrow && isFullscreenEnvEnabled() && companionVisible ? <CompanionSprite /> : null}
+            </>} bottom={<Box flexDirection="row" width="100%" alignItems="flex-end">
               <Box flexDirection="column" flexGrow={1}>
                 {permissionStickyFooter}
                 {/* Immediate local-jsx commands (/btw, /sandbox, /assistant,
@@ -4903,7 +4854,7 @@ export function REPL({
                       {}
                       <PromptInput debug={debug} ideSelection={ideSelection} hasSuppressedDialogs={!!hasSuppressedDialogs} isLocalJSXCommandActive={isShowingLocalJSXCommand} getToolUseContext={getToolUseContext} toolPermissionContext={toolPermissionContext} setToolPermissionContext={setToolPermissionContext} apiKeyStatus={apiKeyStatus} commands={commands} agents={agentDefinitions.activeAgents} isLoading={isLoading} onExit={handleExit} verbose={verbose} messages={messages} onAutoUpdaterResult={setAutoUpdaterResult} autoUpdaterResult={autoUpdaterResult} input={inputValue} onInputChange={setInputValue} mode={inputMode} onModeChange={setInputMode} stashedPrompt={stashedPrompt} setStashedPrompt={setStashedPrompt} submitCount={submitCount} onShowMessageSelector={handleShowMessageSelector} onMessageActionsEnter={
             // Works during isLoading — edit cancels first; uuid selection survives appends.
-            feature('MESSAGE_ACTIONS') && isFullscreenEnvEnabled() && !disableMessageActions ? enterMessageActions : undefined} mcpClients={mcpClients} pastedContents={pastedContents} setPastedContents={setPastedContents} vimMode={vimMode} setVimMode={setVimMode} showBashesDialog={showBashesDialog} setShowBashesDialog={setShowBashesDialog} onSubmit={onSubmit} onAgentSubmit={onAgentSubmit} isSearchingHistory={isSearchingHistory} setIsSearchingHistory={setIsSearchingHistory} helpOpen={isHelpOpen} setHelpOpen={setIsHelpOpen} insertTextRef={feature('VOICE_MODE') ? insertTextRef : undefined} voiceInterimRange={voice.interimRange} />
+            feature('MESSAGE_ACTIONS') && isFullscreenEnvEnabled() && !disableMessageActions ? enterMessageActions : undefined} mcpClients={mcpClients} pastedContents={pastedContents} setPastedContents={setPastedContents} vimMode={vimMode} setVimMode={setVimMode} showBashesDialog={showBashesDialog} setShowBashesDialog={setShowBashesDialog} onSubmit={onSubmit} onAgentSubmit={onAgentSubmit} isSearchingHistory={isSearchingHistory} setIsSearchingHistory={setIsSearchingHistory} helpOpen={isHelpOpen} setHelpOpen={setIsHelpOpen} />
                       <SessionBackgroundHint onBackgroundSession={handleBackgroundSession} isLoading={isLoading} />
                     </>}
                 {cursor &&
@@ -4993,8 +4944,7 @@ export function REPL({
           }} />}
                 {"external" === 'ant' && <DevBar />}
               </Box>
-              {feature('BUDDY') && !(companionNarrow && isFullscreenEnvEnabled()) && companionVisible ? <CompanionSprite /> : null}
-            </Box>} />
+                          </Box>} />
       </MCPConnectionManager>
     </KeybindingSetup>;
   if (isFullscreenEnvEnabled()) {

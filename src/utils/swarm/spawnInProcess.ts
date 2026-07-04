@@ -15,7 +15,7 @@
 
 import sample from 'lodash-es/sample.js'
 import { getSessionId } from '../../bootstrap/state.js'
-import { getSpinnerVerbs } from '../../constants/spinnerVerbs.js'
+import { SPINNER_VERBS } from '../../constants/spinnerVerbs.js'
 import { TURN_COMPLETION_VERBS } from '../../constants/turnCompletionVerbs.js'
 import type { AppState } from '../../state/AppState.js'
 import { createTaskStateBase, generateTaskId } from '../../Task.js'
@@ -168,7 +168,7 @@ export async function spawnInProcessTeammate(
       model,
       abortController,
       awaitingPlanApproval: false,
-      spinnerVerb: sample(getSpinnerVerbs()),
+      spinnerVerb: sample(SPINNER_VERBS),
       pastTenseVerb: sample(TURN_COMPLETION_VERBS),
       permissionMode: planModeRequired ? 'plan' : 'default',
       isIdle: false,

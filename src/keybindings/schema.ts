@@ -166,9 +166,7 @@ export const KEYBINDING_ACTIONS = [
   'settings:search',
   'settings:retry',
   'settings:close',
-  // Voice actions
-  'voice:pushToTalk',
-] as const
+  ] as const
 
 /**
  * Schema for a single keybinding block.

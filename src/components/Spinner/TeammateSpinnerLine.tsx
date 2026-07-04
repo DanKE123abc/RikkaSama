@@ -2,7 +2,7 @@ import figures from 'figures';
 import sample from 'lodash-es/sample.js';
 import * as React from 'react';
 import { useRef, useState } from 'react';
-import { getSpinnerVerbs } from '../../constants/spinnerVerbs.js';
+import { SPINNER_VERBS } from '../../constants/spinnerVerbs.js';
 import { TURN_COMPLETION_VERBS } from '../../constants/turnCompletionVerbs.js';
 import { useElapsedTime } from '../../hooks/useElapsedTime.js';
 import { useTerminalSize } from '../../hooks/useTerminalSize.js';
@@ -77,7 +77,7 @@ export function TeammateSpinnerLine({
   allIdle,
   showPreview
 }: Props): React.ReactNode {
-  const [randomVerb] = useState(() => teammate.spinnerVerb ?? sample(getSpinnerVerbs()));
+  const [randomVerb] = useState(() => teammate.spinnerVerb ?? sample(SPINNER_VERBS));
   const [pastTenseVerb] = useState(() => teammate.pastTenseVerb ?? sample(TURN_COMPLETION_VERBS));
   const isHighlighted = isSelected || isForegrounded;
   const treeChar = isHighlighted ? isLast ? '╘═' : '╞═' : isLast ? '└─' : '├─';

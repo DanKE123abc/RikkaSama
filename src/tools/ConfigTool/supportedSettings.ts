@@ -122,7 +122,7 @@ export const SUPPORTED_SETTINGS: Record<string, SettingConfig> = {
     source: 'settings',
     type: 'string',
     description:
-      'Preferred language for Claude responses and voice dictation (e.g., "japanese", "spanish")',
+      'Preferred language for Claude responses (e.g., "japanese", "spanish")',
   },
   teammateMode: {
     source: 'global',
@@ -138,15 +138,6 @@ export const SUPPORTED_SETTINGS: Record<string, SettingConfig> = {
           type: 'boolean' as const,
           description:
             'Enable AI-based classification for Bash(prompt:...) permission rules',
-        },
-      }
-    : {}),
-  ...(feature('VOICE_MODE')
-    ? {
-        voiceEnabled: {
-          source: 'settings' as const,
-          type: 'boolean' as const,
-          description: 'Enable voice dictation (hold-to-talk)',
         },
       }
     : {}),

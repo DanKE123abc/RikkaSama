@@ -66,6 +66,8 @@ async function isOfficialMarketplaceInstalled(): Promise<boolean> {
   return _isOfficialMarketplaceInstalledCache
 }
 
+//Todo: i18n设置
+
 async function isMarketplacePluginRelevant(
   pluginName: string,
   context: TipContext | undefined,

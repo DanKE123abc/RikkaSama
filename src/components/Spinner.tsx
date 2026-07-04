@@ -13,7 +13,7 @@ import sample from 'lodash-es/sample.js';
 import { formatDuration, formatNumber, formatSecondsShort } from '../utils/format.js';
 import type { Theme } from 'src/utils/theme.js';
 import { activityManager } from '../utils/activityManager.js';
-import { getSpinnerVerbs } from '../constants/spinnerVerbs.js';
+import { SPINNER_VERBS } from '../constants/spinnerVerbs.js';
 import { MessageResponse } from './MessageResponse.js';
 import { TaskListV2 } from './TaskListV2.js';
 import { useTasksV2 } from '../hooks/useTasksV2.js';
@@ -163,7 +163,7 @@ function SpinnerWithVerbInner({
   const nextTask = findNextPendingTask(tasksV2);
 
   // Use useState with initializer to pick a random verb once on mount
-  const [randomVerb] = useState(() => sample(getSpinnerVerbs()));
+  const [randomVerb] = useState(() => sample(SPINNER_VERBS));
 
   // Leader's own verb (always the leader's, regardless of who is foregrounded)
   const leaderVerb = overrideMessage ?? currentTodo?.activeForm ?? currentTodo?.subject ?? randomVerb;
@@ -446,7 +446,7 @@ function _temp5(s) {
   return s.remoteConnectionStatus;
 }
 function _temp4() {
-  return sample(getSpinnerVerbs()) ?? "Working";
+  return sample(SPINNER_VERBS) ?? "Working";
 }
 export function BriefIdleStatus() {
   const $ = _c(9);

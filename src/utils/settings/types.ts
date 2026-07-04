@@ -644,7 +644,7 @@ export const SettingsSchema = lazySchema(() =>
         .string()
         .optional()
         .describe(
-          'Preferred language for Claude responses and voice dictation (e.g., "japanese", "spanish")',
+          'Preferred language for Claude responses (e.g., "japanese", "spanish")',
         ),
       skipWebFetchPreflight: z
         .boolean()
@@ -847,14 +847,6 @@ export const SettingsSchema = lazySchema(() =>
                   'Set to -1 for indefinite sleep (waits for user input). ' +
                   'Useful for limiting idle time in remote/managed environments.',
               ),
-          }
-        : {}),
-      ...(feature('VOICE_MODE')
-        ? {
-            voiceEnabled: z
-              .boolean()
-              .optional()
-              .describe('Enable voice mode (hold-to-talk dictation)'),
           }
         : {}),
       ...(feature('KAIROS')
