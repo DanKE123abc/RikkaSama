@@ -19,7 +19,7 @@ import { isFullscreenEnvEnabled } from '../../utils/fullscreen.js';
 import { isUndercover } from '../../utils/undercover.js';
 import { useMainLoopModel } from '../../hooks/useMainLoopModel.js';
 import { getSdkBetas } from '../../bootstrap/state.js';
-import { tokenCountWithEstimation } from '../../utils/tokens.js';
+import { roughTokenCountEstimationForMessages } from '../../services/tokenEstimation.js';
 import { getMessagesAfterCompactBoundary } from '../../utils/messages.js';
 import { calculateContextPercentages, getContextWindowForModel } from '../../utils/context.js';
 import { EffortIndicator } from '../EffortIndicator.js';
@@ -112,16 +112,17 @@ function PromptInputFooter({
   const mainLoopModel = useMainLoopModel();
   const contextHealth = useMemo(() => {
     const msgsForToken = getMessagesAfterCompactBoundary(messages);
-    const tokenUsage = tokenCountWithEstimation(msgsForToken);
+    if (msgsForToken.length === 0) return null;
+    // Estimate token count from message content. Uses char_count/4 default;
+    // multiply by 2.5 (~char_count/1.6) for better accuracy with Chinese text.
+    const tokenUsage = Math.round(roughTokenCountEstimationForMessages(msgsForToken) * 2.5);
     const contextWindow = getContextWindowForModel(mainLoopModel, getSdkBetas());
     const { used } = calculateContextPercentages(
-      tokenUsage > 0
-        ? {
-            input_tokens: tokenUsage,
-            cache_creation_input_tokens: 0,
-            cache_read_input_tokens: 0,
-          }
-        : null,
+      {
+        input_tokens: tokenUsage,
+        cache_creation_input_tokens: 0,
+        cache_read_input_tokens: 0,
+      },
       contextWindow,
     );
     return used;

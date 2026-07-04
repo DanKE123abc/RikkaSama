@@ -2215,10 +2215,14 @@ async function* queryModel(
           case 'message_delta': {
             usage = updateUsage(usage, part.usage)
 
-            // Compute and store output token speed (tokens/sec)
+            // Compute and store output token speed (tokens/sec).
+            // If the provider doesn't send usage data, clear the speed so
+            // a stale value from a previous request isn't displayed.
             const elapsedMs = Date.now() - start
             if (elapsedMs > 0 && usage.output_tokens > 0) {
               setTokenSpeed(Math.round((usage.output_tokens / elapsedMs) * 1000))
+            } else {
+              resetTokenSpeed()
             }
 
             // Capture research from message_delta if available (internal only).
