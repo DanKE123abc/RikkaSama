@@ -9,7 +9,6 @@ import { useAppState, useSetAppState } from '../../state/AppState.js';
 import type { LocalJSXCommandCall } from '../../types/command.js';
 import type { EffortLevel } from '../../utils/effort.js';
 import { isBilledAsExtraUsage } from '../../utils/extraUsage.js';
-import { clearFastModeCooldown, isFastModeAvailable, isFastModeEnabled, isFastModeSupportedByModel } from '../../utils/fastMode.js';
 import { MODEL_ALIASES } from '../../utils/model/aliases.js';
 import { checkOpus1mAccess, checkSonnet1mAccess } from '../../utils/model/check1mAccess.js';
 import { getDefaultMainLoopModelSetting, isOpus1mMergeEnabled, renderDefaultModelSetting } from '../../utils/model/model.js';
@@ -22,7 +21,6 @@ function ModelPickerWrapper(t0) {
   } = t0;
   const mainLoopModel = useAppState(_temp);
   const mainLoopModelForSession = useAppState(_temp2);
-  const isFastMode = useAppState(_temp3);
   const setAppState = useSetAppState();
   let t1;
   if ($[0] !== mainLoopModel || $[1] !== onDone) {
@@ -43,7 +41,7 @@ function ModelPickerWrapper(t0) {
   }
   const handleCancel = t1;
   let t2;
-  if ($[3] !== isFastMode || $[4] !== mainLoopModel || $[5] !== onDone || $[6] !== setAppState) {
+  if ($[3] !== mainLoopModel || $[4] !== onDone || $[5] !== setAppState) {
     t2 = function handleSelect(model, effort) {
       logEvent("tengu_model_command_menu", {
         action: model as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
@@ -59,67 +57,31 @@ function ModelPickerWrapper(t0) {
       if (effort !== undefined) {
         message = message + ` with ${chalk.bold(effort)} effort`;
       }
-      let wasFastModeToggledOn = undefined;
-      if (isFastModeEnabled()) {
-        clearFastModeCooldown();
-        if (!isFastModeSupportedByModel(model) && isFastMode) {
-          setAppState(_temp4);
-          wasFastModeToggledOn = false;
-        } else {
-          if (isFastModeSupportedByModel(model) && isFastModeAvailable() && isFastMode) {
-            message = message + " \xB7 Fast mode ON";
-            wasFastModeToggledOn = true;
-          }
-        }
-      }
-      if (isBilledAsExtraUsage(model, wasFastModeToggledOn === true, isOpus1mMergeEnabled())) {
+      if (isBilledAsExtraUsage(model, undefined, isOpus1mMergeEnabled())) {
         message = message + " \xB7 Billed as extra usage";
-      }
-      if (wasFastModeToggledOn === false) {
-        message = message + " \xB7 Fast mode OFF";
       }
       onDone(message);
     };
-    $[3] = isFastMode;
-    $[4] = mainLoopModel;
-    $[5] = onDone;
-    $[6] = setAppState;
-    $[7] = t2;
+    $[3] = mainLoopModel;
+    $[4] = onDone;
+    $[5] = setAppState;
+    $[6] = t2;
   } else {
     t2 = $[7];
   }
   const handleSelect = t2;
   let t3;
-  if ($[8] !== isFastMode || $[9] !== mainLoopModel) {
-    t3 = isFastModeEnabled() && isFastMode && isFastModeSupportedByModel(mainLoopModel) && isFastModeAvailable();
-    $[8] = isFastMode;
+  if ($[7] !== handleCancel || $[8] !== handleSelect || $[9] !== mainLoopModel || $[10] !== mainLoopModelForSession) {
+    t3 = <ModelPicker initial={mainLoopModel} sessionModel={mainLoopModelForSession} onSelect={handleSelect} onCancel={handleCancel} isStandaloneCommand={true} />;
+    $[7] = handleCancel;
+    $[8] = handleSelect;
     $[9] = mainLoopModel;
-    $[10] = t3;
+    $[10] = mainLoopModelForSession;
+    $[11] = t3;
   } else {
-    t3 = $[10];
+    t3 = $[11];
   }
-  let t4;
-  if ($[11] !== handleCancel || $[12] !== handleSelect || $[13] !== mainLoopModel || $[14] !== mainLoopModelForSession || $[15] !== t3) {
-    t4 = <ModelPicker initial={mainLoopModel} sessionModel={mainLoopModelForSession} onSelect={handleSelect} onCancel={handleCancel} isStandaloneCommand={true} showFastModeNotice={t3} />;
-    $[11] = handleCancel;
-    $[12] = handleSelect;
-    $[13] = mainLoopModel;
-    $[14] = mainLoopModelForSession;
-    $[15] = t3;
-    $[16] = t4;
-  } else {
-    t4 = $[16];
-  }
-  return t4;
-}
-function _temp4(prev_0) {
-  return {
-    ...prev_0,
-    fastMode: false
-  };
-}
-function _temp3(s_1) {
-  return s_1.fastMode;
+  return t3;
 }
 function _temp2(s_0) {
   return s_0.mainLoopModelForSession;
@@ -136,7 +98,6 @@ function SetModelAndClose({
     display?: CommandResultDisplay;
   }) => void;
 }): React.ReactNode {
-  const isFastMode = useAppState(s => s.fastMode);
   const setAppState = useSetAppState();
   const model = args === 'default' ? null : args;
   React.useEffect(() => {
@@ -202,27 +163,8 @@ function SetModelAndClose({
         mainLoopModelForSession: null
       }));
       let message = `Set model to ${chalk.bold(renderModelLabel(modelValue))}`;
-      let wasFastModeToggledOn = undefined;
-      if (isFastModeEnabled()) {
-        clearFastModeCooldown();
-        if (!isFastModeSupportedByModel(modelValue) && isFastMode) {
-          setAppState(prev_0 => ({
-            ...prev_0,
-            fastMode: false
-          }));
-          wasFastModeToggledOn = false;
-          // Do not update fast mode in settings since this is an automatic downgrade
-        } else if (isFastModeSupportedByModel(modelValue) && isFastMode) {
-          message += ` · Fast mode ON`;
-          wasFastModeToggledOn = true;
-        }
-      }
-      if (isBilledAsExtraUsage(modelValue, wasFastModeToggledOn === true, isOpus1mMergeEnabled())) {
+      if (isBilledAsExtraUsage(modelValue, isOpus1mMergeEnabled())) {
         message += ` · Billed as extra usage`;
-      }
-      if (wasFastModeToggledOn === false) {
-        // Fast mode was toggled off, show suffix after extra usage billing
-        message += ` · Fast mode OFF`;
       }
       onDone(message);
     }

@@ -46,7 +46,6 @@ import { getCliTeammateModeOverride, clearCliTeammateModeOverride } from '../../
 import { getHardcodedTeammateModelFallback } from '../../utils/swarm/teammateModel.js';
 import { useSearchInput } from '../../hooks/useSearchInput.js';
 import { useTerminalSize } from '../../hooks/useTerminalSize.js';
-import { clearFastModeCooldown, FAST_MODE_MODEL_DISPLAY, isFastModeAvailable, isFastModeEnabled, getFastModeModel, isFastModeSupportedByModel } from '../../utils/fastMode.js';
 import { isFullscreenEnvEnabled } from '../../utils/fullscreen.js';
 type Props = {
   onClose: (result?: string, options?: {
@@ -120,7 +119,6 @@ export function Config({
   const mainLoopModel = useAppState(s => s.mainLoopModel);
   const verbose = useAppState(s_0 => s_0.verbose);
   const thinkingEnabled = useAppState(s_1 => s_1.thinkingEnabled);
-  const isFastMode = useAppState(s_2 => isFastModeEnabled() ? s_2.fastMode : false);
   const promptSuggestionEnabled = useAppState(s_3 => s_3.promptSuggestionEnabled);
   // Show auto in the default-mode dropdown when the user has opted in OR the
   // config is fully 'enabled' — even if currently circuit-broken ('disabled'),
@@ -156,7 +154,6 @@ export function Config({
       mainLoopModelForSession: s_4.mainLoopModelForSession,
       verbose: s_4.verbose,
       thinkingEnabled: s_4.thinkingEnabled,
-      fastMode: s_4.fastMode,
       promptSuggestionEnabled: s_4.promptSuggestionEnabled,
       isBriefOnly: s_4.isBriefOnly,
       replBridgeEnabled: s_4.replBridgeEnabled,
@@ -212,7 +209,7 @@ export function Config({
       mainLoopModelForSession: null
     }));
     setChanges(prev_0 => {
-      const valStr = modelDisplayString(value) + (isBilledAsExtraUsage(value, false, isOpus1mMergeEnabled()) ? ' · Billed as extra usage' : '');
+      const valStr = modelDisplayString(value) + (isBilledAsExtraUsage(value, isOpus1mMergeEnabled()) ? ' · Billed as extra usage' : '');
       if ('model' in prev_0) {
         const {
           model,
@@ -342,41 +339,7 @@ export function Config({
       });
     }
   },
-  // Fast mode toggle (ant-only, eliminated from external builds)
-  ...(isFastModeEnabled() && isFastModeAvailable() ? [{
-    id: 'fastMode',
-    label: `Fast mode (${FAST_MODE_MODEL_DISPLAY} only)`,
-    value: !!isFastMode,
-    type: 'boolean' as const,
-    onChange(enabled_0: boolean) {
-      clearFastModeCooldown();
-      updateSettingsForSource('userSettings', {
-        fastMode: enabled_0 ? true : undefined
-      });
-      if (enabled_0) {
-        setAppState(prev_7 => ({
-          ...prev_7,
-          mainLoopModel: getFastModeModel(),
-          mainLoopModelForSession: null,
-          fastMode: true
-        }));
-        setChanges(prev_8 => ({
-          ...prev_8,
-          model: getFastModeModel(),
-          'Fast mode': 'ON'
-        }));
-      } else {
-        setAppState(prev_9 => ({
-          ...prev_9,
-          fastMode: false
-        }));
-        setChanges(prev_10 => ({
-          ...prev_10,
-          'Fast mode': 'OFF'
-        }));
-      }
-    }
-  }] : []), ...(getFeatureValue_CACHED_MAY_BE_STALE('tengu_chomp_inflection', false) ? [{
+  ...(getFeatureValue_CACHED_MAY_BE_STALE('tengu_chomp_inflection', false) ? [{
     id: 'promptSuggestionEnabled',
     label: 'Prompt suggestions',
     value: promptSuggestionEnabled,
@@ -1171,7 +1134,7 @@ export function Config({
         display: 'system'
       });
     }
-  }, [showSubmenu, changes, globalConfig, mainLoopModel, currentOutputStyle, currentLanguage, settingsData?.autoUpdatesChannel, isFastModeEnabled() ? (settingsData as Record<string, unknown> | undefined)?.fastMode : undefined, onClose]);
+  }, [showSubmenu, changes, globalConfig, mainLoopModel, currentOutputStyle, currentLanguage, settingsData?.autoUpdatesChannel, onClose]);
 
   // Restore all state stores to their mount-time snapshots. Changes are
   // applied to disk/AppState immediately on toggle, so "cancel" means
@@ -1199,7 +1162,6 @@ export function Config({
     const iu = initialUserSettings;
     updateSettingsForSource('userSettings', {
       alwaysThinkingEnabled: iu?.alwaysThinkingEnabled,
-      fastMode: iu?.fastMode,
       promptSuggestionEnabled: iu?.promptSuggestionEnabled,
       autoUpdatesChannel: iu?.autoUpdatesChannel,
       minimumVersion: iu?.minimumVersion,
@@ -1231,7 +1193,6 @@ export function Config({
       mainLoopModelForSession: ia.mainLoopModelForSession,
       verbose: ia.verbose,
       thinkingEnabled: ia.thinkingEnabled,
-      fastMode: ia.fastMode,
       promptSuggestionEnabled: ia.promptSuggestionEnabled,
       isBriefOnly: ia.isBriefOnly,
       replBridgeEnabled: ia.replBridgeEnabled,
@@ -1475,7 +1436,7 @@ export function Config({
       }} onCancel={() => {
         setShowSubmenu(null);
         setTabsHidden(false);
-      }} showFastModeNotice={isFastModeEnabled() ? isFastMode && isFastModeSupportedByModel(mainLoopModel) && isFastModeAvailable() : false} />
+      }} />
           <Text dimColor>
             <Byline>
               <KeyboardShortcutHint shortcut="Enter" action="confirm" />

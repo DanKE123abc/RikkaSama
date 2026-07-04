@@ -38,7 +38,6 @@ export function migrateFennecToOpus(): void {
     ) {
       updateSettingsForSource('userSettings', {
         model: 'opus[1m]',
-        fastMode: true,
       })
     }
   }

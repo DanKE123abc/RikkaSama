@@ -4,7 +4,6 @@ import * as React from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useExitOnCtrlCDWithKeybindings } from 'src/hooks/useExitOnCtrlCDWithKeybindings.js';
 import { type AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS, logEvent } from 'src/services/analytics/index.js';
-import { FAST_MODE_MODEL_DISPLAY, isFastModeAvailable, isFastModeCooldown, isFastModeEnabled } from 'src/utils/fastMode.js';
 import { Box, Text } from '../ink.js';
 import { useKeybindings } from '../keybindings/useKeybinding.js';
 import { useAppState, useSetAppState } from '../state/AppState.js';
@@ -24,7 +23,6 @@ export type Props = {
   onSelect: (model: string | null, effort: EffortLevel | undefined) => void;
   onCancel?: () => void;
   isStandaloneCommand?: boolean;
-  showFastModeNotice?: boolean;
   /** Overrides the dim header line below "Select model". */
   headerText?: string;
   /**
@@ -44,7 +42,6 @@ export function ModelPicker(t0) {
     onSelect,
     onCancel,
     isStandaloneCommand,
-    showFastModeNotice,
     headerText,
     skipSettingsWrite
   } = t0;
@@ -52,7 +49,6 @@ export function ModelPicker(t0) {
   const exitState = useExitOnCtrlCDWithKeybindings();
   const initialValue = initial === null ? NO_PREFERENCE : initial;
   const [focusedValue, setFocusedValue] = useState(initialValue);
-  const isFastMode = useAppState(_temp);
   const [hasToggledEffort, setHasToggledEffort] = useState(false);
   const effortValue = useAppState(_temp2);
   let t1;
@@ -64,7 +60,7 @@ export function ModelPicker(t0) {
     t1 = $[1];
   }
   const [effort, setEffort] = useState(t1);
-  const t2 = isFastMode ?? false;
+  const t2 = false;
   let t3;
   if ($[2] !== t2) {
     t3 = getModelOptions(t2);
@@ -334,17 +330,10 @@ export function ModelPicker(t0) {
   } else {
     t24 = $[66];
   }
-  let t25;
-  if ($[67] !== showFastModeNotice) {
-    t25 = isFastModeEnabled() ? showFastModeNotice ? <Box marginBottom={1}><Text dimColor={true}>Fast mode is <Text bold={true}>ON</Text> and available with{" "}{FAST_MODE_MODEL_DISPLAY} only (/fast). Switching to other models turn off fast mode.</Text></Box> : isFastModeAvailable() && !isFastModeCooldown() ? <Box marginBottom={1}><Text dimColor={true}>Use <Text bold={true}>/fast</Text> to turn on Fast mode ({FAST_MODE_MODEL_DISPLAY} only).</Text></Box> : null : null;
-    $[67] = showFastModeNotice;
-    $[68] = t25;
-  } else {
-    t25 = $[68];
-  }
+  const t25 = undefined;
   let t26;
-  if ($[69] !== t19 || $[70] !== t23 || $[71] !== t24 || $[72] !== t25) {
-    t26 = <Box flexDirection="column">{t19}{t23}{t24}{t25}</Box>;
+  if ($[69] !== t19 || $[70] !== t23 || $[71] !== t24) {
+    t26 = <Box flexDirection="column">{t19}{t23}{t24}</Box>;
     $[69] = t19;
     $[70] = t23;
     $[71] = t24;
@@ -394,9 +383,6 @@ function _temp3(opt_0) {
 }
 function _temp2(s_0) {
   return s_0.effortValue;
-}
-function _temp(s) {
-  return isFastModeEnabled() ? s.fastMode : false;
 }
 function resolveOptionModel(value?: string): string | undefined {
   if (!value) return undefined;

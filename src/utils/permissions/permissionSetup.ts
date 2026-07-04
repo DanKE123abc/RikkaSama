@@ -1035,7 +1035,6 @@ export function getAutoModeUnavailableNotification(
  */
 export async function verifyAutoModeGateAccess(
   _currentContext: ToolPermissionContext,
-  _fastMode?: boolean,
 ): Promise<AutoModeGateCheckResult> {
   // Auto mode is always available.
   return {

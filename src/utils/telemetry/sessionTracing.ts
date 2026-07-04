@@ -49,7 +49,6 @@ export function startLLMRequestSpan(
   _model: string,
   _newContext?: LLMRequestNewContext,
   _messagesForAPI?: unknown[],
-  _fastMode?: boolean,
 ): Span {
   return createNoopSpan()
 }
