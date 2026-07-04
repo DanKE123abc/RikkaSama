@@ -144,6 +144,7 @@ import {
 import type { QuerySource } from 'src/constants/querySource.js'
 import type { Notification } from 'src/context/notifications.js'
 import { addToTotalSessionCost } from 'src/cost-tracker.js'
+import { resetTokenSpeed, setTokenSpeed } from '../../utils/tokenSpeed.js'
 import { getFeatureValue_CACHED_MAY_BE_STALE } from 'src/services/analytics/growthbook.js'
 import type { AgentId } from 'src/types/ids.js'
 import {
@@ -1978,6 +1979,7 @@ async function* queryModel(
 
         switch (part.type) {
           case 'message_start': {
+            resetTokenSpeed()
             partialMessage = part.message
             ttftMs = Date.now() - start
             usage = updateUsage(usage, part.message?.usage)
@@ -2212,6 +2214,13 @@ async function* queryModel(
           }
           case 'message_delta': {
             usage = updateUsage(usage, part.usage)
+
+            // Compute and store output token speed (tokens/sec)
+            const elapsedMs = Date.now() - start
+            if (elapsedMs > 0 && usage.output_tokens > 0) {
+              setTokenSpeed(Math.round((usage.output_tokens / elapsedMs) * 1000))
+            }
+
             // Capture research from message_delta if available (internal only).
             // Always overwrite with the latest value. Also write back to
             // already-yielded messages since message_delta arrives after

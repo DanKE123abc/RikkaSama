@@ -58,18 +58,21 @@ function buildHealthBar(percent: number): string {
 
 type EffortIndicatorProps = {
   contextHealth?: number | null
+  tokenSpeed?: number | null
 }
 
 export function EffortIndicator({
   contextHealth,
+  tokenSpeed,
 }: EffortIndicatorProps): React.ReactNode {
   const effortValue = useAppState((s) => s.effortValue)
   const mainLoopModel = useMainLoopModel()
   const text = getEffortNotificationText(effortValue, mainLoopModel)
   if (!text) return null
+  const speedPrefix = tokenSpeed && tokenSpeed > 0 ? `${tokenSpeed}t/s ` : ''
   if (contextHealth != null) {
     const bar = buildHealthBar(contextHealth)
-    return <Text wrap="truncate">{text}|{bar}</Text>
+    return <Text wrap="truncate">{speedPrefix}{text}|{bar}</Text>
   }
-  return <Text wrap="truncate">{text}</Text>
+  return <Text wrap="truncate">{speedPrefix}{text}</Text>
 }

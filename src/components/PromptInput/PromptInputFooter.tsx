@@ -23,6 +23,7 @@ import { tokenCountFromLastAPIResponse } from '../../utils/tokens.js';
 import { getMessagesAfterCompactBoundary } from '../../utils/messages.js';
 import { calculateContextPercentages, getContextWindowForModel } from '../../utils/context.js';
 import { EffortIndicator } from '../EffortIndicator.js';
+import { getTokenSpeed } from '../../utils/tokenSpeed.js';
 import { CoordinatorTaskPanel, useCoordinatorTaskCount } from '../CoordinatorAgentStatus.js';
 import { getLastAssistantMessageId, StatusLine, statusLineShouldDisplay } from '../StatusLine.js';
 import { Notifications } from './Notifications.js';
@@ -125,6 +126,7 @@ function PromptInputFooter({
     );
     return used;
   }, [messages, mainLoopModel]);
+  const tokenSpeed = useMemo(() => getTokenSpeed(), [messages]);
   const isNarrow = columns < 80;
   // In fullscreen the bottom slot is flexShrink:0, so every row here is a row
   // stolen from the ScrollBox. Drop the optional StatusLine first. Non-fullscreen
@@ -167,7 +169,7 @@ function PromptInputFooter({
         <Box flexShrink={1} gap={1}>
           {isFullscreen ? null : <Notifications apiKeyStatus={apiKeyStatus} autoUpdaterResult={autoUpdaterResult} debug={debug} isAutoUpdating={isAutoUpdating} verbose={verbose} messages={messages} onAutoUpdaterResult={onAutoUpdaterResult} onChangeIsUpdating={onChangeIsUpdating} ideSelection={ideSelection} mcpClients={mcpClients} isInputWrapped={isInputWrapped} isNarrow={isNarrow} />}
           {"external" === 'ant' && isUndercover() && <Text dimColor>undercover</Text>}
-          <EffortIndicator contextHealth={contextHealth} />
+          <EffortIndicator contextHealth={contextHealth} tokenSpeed={tokenSpeed} />
           <BridgeStatusIndicator bridgeSelected={bridgeSelected} />
         </Box>
       </Box>

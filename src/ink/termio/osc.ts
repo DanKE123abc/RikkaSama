@@ -3,6 +3,9 @@
  */
 
 import { Buffer } from 'buffer'
+import { writeFile } from 'fs/promises'
+import { tmpdir } from 'os'
+import { join } from 'path'
 import { env } from '../../utils/env.js'
 import { execFileNoThrow } from '../../utils/execFileNoThrow.js'
 import { BEL, ESC, ESC_TYPE, SEP } from './ansi.js'
@@ -211,10 +214,22 @@ function copyNative(text: string): void {
       return
     }
     case 'win32':
-      // clip.exe is always available on Windows. Unicode handling is
-      // imperfect (system locale encoding) but good enough for a fallback.
-      void execFileNoThrow('clip', [], opts)
-      return
+      // PowerShell's Set-Clipboard handles Unicode natively, unlike clip.exe
+      // which interprets stdin using the system locale encoding (e.g. CP936/GBK
+      // on Chinese Windows), garbling non-ASCII characters.
+      // Write to a temp file with UTF-16LE (PowerShell's "Unicode") and clean up
+      // after ourselves to avoid command-line length and escaping issues.
+      {
+        const tmpFile = join(tmpdir(), `claude_clip_${Date.now()}.tmp`)
+        void writeFile(tmpFile, text, 'utf16le').then(() => {
+          void execFileNoThrow('powershell', [
+            '-NoProfile',
+            '-Command',
+            `Get-Content -Raw -LiteralPath '${tmpFile}' -Encoding Unicode | Set-Clipboard; Remove-Item -LiteralPath '${tmpFile}'`,
+          ], { useCwd: false, timeout: 5000 })
+        })
+        return
+      }
   }
 }
 
