@@ -2,7 +2,7 @@
 
 Audit date: 2026-03-31
 
-This repository currently references 88 `feature('FLAG')` compile-time flags.
+This repository currently references 82 `feature('FLAG')` compile-time flags.
 I re-checked them by bundling the CLI once per flag on top of the current
 external-build defines and externals. Result:
 
@@ -137,12 +137,6 @@ or plumbing toggles rather than user-facing experimental features.
   Allows test versions in native installer flows.
 - `ANTI_DISTILLATION_CC`
   Adds anti-distillation request metadata.
-- `BREAK_CACHE_COMMAND`
-  Injects the break-cache command path.
-- `COWORKER_TYPE_TELEMETRY`
-  Adds coworker-type telemetry fields.
-- `DOWNLOAD_USER_SETTINGS`
-  Enables settings-sync pull paths.
 - `DUMP_SYSTEM_PROMPT`
   Enables the system-prompt dump path.
 - `FILE_PERSISTENCE`
@@ -159,13 +153,8 @@ or plumbing toggles rather than user-facing experimental features.
   Enables perfetto tracing hooks.
 - `SKILL_IMPROVEMENT`
   Enables skill-improvement hooks.
-- `SKIP_DETECTION_WHEN_AUTOUPDATES_DISABLED`
-  Skips updater detection when auto-updates are disabled.
 - `SLOW_OPERATION_LOGGING`
   Enables slow-operation logging.
-- `UPLOAD_USER_SETTINGS`
-  Enables settings-sync push paths.
-
 ## Compile-Safe But Runtime-Caveated
 
 These bundle today, but I would still treat them as experimental because they
@@ -241,9 +230,6 @@ entire subsystem.
 - `TEMPLATES`
   Fails on missing `src/cli/handlers/templateJobs.js`. The CLI fast-path is
   already wired in `src/entrypoints/cli.tsx`.
-- `TORCH`
-  Fails on missing `src/commands/torch.js`. This looks like a single command
-  entry gap.
 - `TRANSCRIPT_CLASSIFIER`
   The first hard failure is missing
   `src/utils/permissions/yolo-classifier-prompts/auto_mode_system_prompt.txt`.

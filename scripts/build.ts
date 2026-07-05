@@ -74,8 +74,9 @@ function getDevVersion(baseVersion: string): string {
 
 function getVersionChangelog(): string {
   return (
-    runCommand(['git', 'log', '--format=%h %s', '-20']) ??
-    'Local development build'
+    (runCommand(['git', 'log', '--format=%h %s', '-20']) ??
+      'Local development build')
+      .replace(/\n/g, '; ')
   )
 }
 
@@ -155,7 +156,7 @@ const defines = {
     'This reconstructed source snapshot does not include Anthropic internal issue routing.',
   ),
   'MACRO.VERSION_CHANGELOG': JSON.stringify(
-    dev ? getVersionChangelog() : 'https://github.com/paoloanzn/claude-code',
+    dev ? 'Local development build' : 'https://github.com/paoloanzn/claude-code',
   ),
 } as const
 

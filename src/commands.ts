@@ -27,7 +27,6 @@ import keybindings from './commands/keybindings/index.js'
 
 import installGitHubApp from './commands/install-github-app/index.js'
 import installSlackApp from './commands/install-slack-app/index.js'
-import breakCache from './commands/break-cache/index.js'
 import mcp from './commands/mcp/index.js'
 import onboarding from './commands/onboarding/index.js'
 import pr_comments from './commands/pr_comments/index.js'
@@ -98,7 +97,6 @@ const subscribePr = feature('KAIROS_GITHUB_WEBHOOKS')
 const ultraplan = feature('ULTRAPLAN')
   ? require('./commands/ultraplan.js').default
   : null
-const torch = feature('TORCH') ? require('./commands/torch.js').default : null
 const peersCmd = feature('UDS_INBOX')
   ? (
       require('./commands/peers/index.js') as typeof import('./commands/peers/index.js')
@@ -211,7 +209,6 @@ export { getCommandName, isCommandEnabled } from './types/command.js'
 // Commands that get eliminated from the external build
 export const INTERNAL_ONLY_COMMANDS = [
   backfillSessions,
-  breakCache,
   bughunter,
   commit,
   commitPushPr,
@@ -319,7 +316,6 @@ const COMMANDS = memoize((): Command[] => [
   ...(peersCmd ? [peersCmd] : []),
   tasks,
   ...(workflowsCmd ? [workflowsCmd] : []),
-  ...(torch ? [torch] : []),
   ...(ultraplan ? [ultraplan] : []),
   ...(process.env.USER_TYPE === 'ant' && !process.env.IS_DEMO
     ? INTERNAL_ONLY_COMMANDS

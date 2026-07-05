@@ -2,6 +2,7 @@ import { getInitialSettings } from '../utils/settings/settings.js'
 import { spinnerVerbs_zh , spinnerVerbs_en } from './language/spinnerVerbs'
 import { turnCompletionVerbs_zh , turnCompletionVerbs_en } from './language/turnCompletionVerbs'
 import * as tips from './language/tips'
+import * as other from './language/other'
 
 export type LanguageCode = 'en' | 'zh' ;
 
@@ -61,6 +62,16 @@ export function getTipTranslation(
   replacements?: TipTranslationReplacements,
 ): string {
   const template = defaultLanguage === 'zh' ? tips.tips_zh[key] : tips.tips_en[key]
+  return formatTipTranslation(template, replacements)
+}
+
+export type OtherTranslationKey = keyof typeof other.other_zh
+
+export function getOtherTranslation(
+  key: OtherTranslationKey,
+  replacements?: TipTranslationReplacements,
+): string {
+  const template = defaultLanguage === 'zh' ? other.other_zh[key] : other.other_en[key]
   return formatTipTranslation(template, replacements)
 }
 

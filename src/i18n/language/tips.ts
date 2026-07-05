@@ -329,4 +329,3 @@ export const tips_en = {
 }
 
 export type TipTranslationKey = keyof typeof tips_zh
-

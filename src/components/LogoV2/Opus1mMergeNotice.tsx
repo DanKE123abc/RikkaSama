@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { UP_ARROW } from '../../constants/figures.js';
 import { Box, Text } from '../../ink.js';
 import { getGlobalConfig, saveGlobalConfig } from '../../utils/config.js';
+import { getOtherTranslation } from '../../i18n/language.js';
 import { isOpus1mMergeEnabled } from '../../utils/model/model.js';
 import { AnimatedAsterisk } from './AnimatedAsterisk.js';
 const MAX_SHOW_COUNT = 6;
@@ -45,7 +46,7 @@ export function Opus1mMergeNotice() {
   }
   let t2;
   if ($[3] === Symbol.for("react.memo_cache_sentinel")) {
-    t2 = <Box paddingLeft={2}><AnimatedAsterisk char={UP_ARROW} /><Text dimColor={true}>{" "}准备好开始了吗？输入 /help 查看帮助</Text></Box>;
+    t2 = <Box paddingLeft={2}><AnimatedAsterisk char={UP_ARROW} /><Text dimColor={true}>{" "}{getOtherTranslation('startupHelpPrompt')}</Text></Box>;
     $[3] = t2;
   } else {
     t2 = $[3];

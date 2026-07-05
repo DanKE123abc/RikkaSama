@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "WebSearchV2",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "mcp__context7__query-docs",
+      "Bash(bun build:*)"
     ]
   }
 }
