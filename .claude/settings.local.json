@@ -4,7 +4,12 @@
       "WebSearchV2",
       "Bash(npm run:*)",
       "mcp__context7__query-docs",
-      "Bash(bun build:*)"
+      "Bash(bun build:*)",
+      "Bash(grep -rl CLAUDE.md --include=*.ts --include=*.tsx C:/Users/15860/Desktop/RikkaSama/src)",
+      "Bash(grep -rn \"getManagedFilePath\\\\|managedFilePath\" --include=*.ts C:/Users/15860/Desktop/RikkaSama/src/utils/settings)",
+      "Bash(grep -r -i -l \"打分\\\\|评分\\\\|Claude.*评价\\\\|评价.*Claude\\\\|response.*score\\\\|response.*rating\" --include=*.ts --include=*.tsx --include=*.json .)",
+      "Bash(grep -r -i -l \"FeedbackSurvey\\\\|feedback.*survey\\\\|memory.*survey\\\\|MemorySurvey\\\\|PostCompactSurvey\" --include=*.ts --include=*.tsx src/)",
+      "Bash(grep -r -l \"FeedbackSurvey\\\\|feedbackSurvey\\\\|feedback_survey\\\\|FEEDBACK_SURVEY\\\\|useFeedbackSurvey\\\\|useMemorySurvey\\\\|usePostCompactSurvey\\\\|SurveyState\\\\|surveyState\\\\|SkillImprovementSurvey\" --include=*.ts --include=*.tsx src/)"
     ]
   }
 }

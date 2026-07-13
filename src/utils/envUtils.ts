@@ -11,24 +11,29 @@ export const getClaudeConfigHomeDir = memoize(
     if (process.env.CLAUDE_CONFIG_DIR) {
       return process.env.CLAUDE_CONFIG_DIR.normalize('NFC')
     }
-    
-    // Priority 2: Check if we're running from a built executable
-    // If data/config.json exists in the executable's directory, use that as config dir
+
+    // Priority 2: Always use data/ directory
+    // Check <cwd>/data/ first (development mode), then <execDir>/data/ (packaged mode)
     try {
-      const execPath = process.execPath
-      const execDir = dirname(execPath)
-      const dataDir = join(execDir, 'data')
-      const jsonConfigPath = join(dataDir, 'config.json')
-      
-      // If JSON config file exists, use data directory as config home
-      if (existsSync(jsonConfigPath)) {
-        return dataDir.normalize('NFC')
+      // Development mode: data/ relative to current working directory
+      const cwdDataDir = join(process.cwd(), 'data')
+      const cwdConfigPath = join(cwdDataDir, 'config.json')
+      if (existsSync(cwdConfigPath)) {
+        return cwdDataDir.normalize('NFC')
+      }
+
+      // Packaged mode: data/ relative to executable directory
+      const execDir = dirname(process.execPath)
+      const execDataDir = join(execDir, 'data')
+      const execConfigPath = join(execDataDir, 'config.json')
+      if (existsSync(execConfigPath)) {
+        return execDataDir.normalize('NFC')
       }
     } catch {
       // Ignore errors, fall back to default
     }
-    
-    // Priority 3: Default to ~/.claude for backward compatibility
+
+    // Priority 3: Fallback to ~/.claude
     return join(homedir(), '.claude').normalize('NFC')
   },
   () => process.env.CLAUDE_CONFIG_DIR,
