@@ -24,6 +24,7 @@ import {
   is1PEventLoggingEnabled,
   logGrowthBookExperimentTo1P,
 } from './firstPartyEventLogger.js'
+import { getBaseUrl } from '../../utils/jsonConfig.js'
 
 /**
  * User attributes sent to GrowthBook for targeting.
@@ -437,7 +438,7 @@ function isGrowthBookEnabled(): boolean {
  * is absent for direct-API users. Hostname only — no path/query/creds.
  */
 export function getApiBaseUrlHost(): string | undefined {
-  const baseUrl = process.env.ANTHROPIC_BASE_URL
+  const baseUrl = getBaseUrl()
   if (!baseUrl) return undefined
   try {
     const host = new URL(baseUrl).host

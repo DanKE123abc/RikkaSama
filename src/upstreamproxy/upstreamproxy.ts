@@ -26,6 +26,7 @@ import { registerCleanup } from '../utils/cleanupRegistry.js'
 import { logForDebugging } from '../utils/debug.js'
 import { isEnvTruthy } from '../utils/envUtils.js'
 import { isENOENT } from '../utils/errors.js'
+import { getBaseUrl } from '../utils/jsonConfig.js'
 import { startUpstreamProxyRelay } from './relay.js'
 
 export const SESSION_TOKEN_PATH = '/run/ccr/session_token'
@@ -112,12 +113,10 @@ export async function initUpstreamProxy(opts?: {
   setNonDumpable()
 
   // CCR injects ANTHROPIC_BASE_URL via StartupContext (sessionExecutor.ts /
-  // sessionHandler.ts). getOauthConfig() is wrong here: it keys off
-  // USER_TYPE + USE_{LOCAL,STAGING}_OAUTH, none of which the container sets,
-  // so it always returned the prod URL and the CA fetch 404'd.
+  // sessionHandler.ts). Read from config.json first, then fall back to default.
   const baseUrl =
     opts?.ccrBaseUrl ??
-    process.env.ANTHROPIC_BASE_URL ??
+    getBaseUrl() ??
     'https://api.anthropic.com'
   const caBundlePath =
     opts?.caBundlePath ?? join(homedir(), '.ccr', 'ca-bundle.crt')

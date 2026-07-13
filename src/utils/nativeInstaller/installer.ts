@@ -30,15 +30,11 @@ import {
 } from 'fs/promises'
 import { homedir } from 'os'
 import { basename, delimiter, dirname, join, resolve } from 'path'
-import {
-  type AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
-  logEvent,
-} from 'src/services/analytics/index.js'
-import { getMaxVersion, shouldSkipVersion } from '../autoUpdater.js'
+import { logEvent } from 'src/services/analytics/index.js'
 import { registerCleanup } from '../cleanupRegistry.js'
 import { getGlobalConfig, saveGlobalConfig } from '../config.js'
 import { logForDebugging } from '../debug.js'
-import { getCurrentInstallationType } from '../doctorDiagnostic.js'
+import { getCurrentInstallationType } from '../installationType.js'
 import { env } from '../env.js'
 import { envDynamic } from '../envDynamic.js'
 import { isEnvTruthy } from '../envUtils.js'
@@ -47,7 +43,6 @@ import { execFileNoThrowWithCwd } from '../execFileNoThrow.js'
 import { getShellType } from '../localInstaller.js'
 import * as lockfile from '../lockfile.js'
 import { logError } from '../log.js'
-import { gt, gte } from '../semver.js'
 import {
   filterClaudeAliases,
   getShellConfigPaths,
@@ -507,31 +502,6 @@ async function updateLatest(
 
   logForDebugging(`Checking for native installer update to version ${version}`)
 
-  // Check if max version is set (server-side kill switch for auto-updates)
-  if (!forceReinstall) {
-    const maxVersion = await getMaxVersion()
-    if (maxVersion && gt(version, maxVersion)) {
-      logForDebugging(
-        `Native installer: maxVersion ${maxVersion} is set, capping update from ${version} to ${maxVersion}`,
-      )
-      // If we're already at or above maxVersion, skip the update entirely
-      if (gte(MACRO.VERSION, maxVersion)) {
-        logForDebugging(
-          `Native installer: current version ${MACRO.VERSION} is already at or above maxVersion ${maxVersion}, skipping update`,
-        )
-        logEvent('tengu_native_update_skipped_max_version', {
-          latency_ms: Date.now() - startTime,
-          max_version:
-            maxVersion as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
-          available_version:
-            version as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
-        })
-        return { success: true, latestVersion: version }
-      }
-      version = maxVersion
-    }
-  }
-
   // Early exit: if we're already running this exact version AND both the version binary
   // and executable exist and are valid. We need to proceed if the executable doesn't exist,
   // is invalid (e.g., empty/corrupted from a failed install), or we're running via npx.
@@ -547,16 +517,6 @@ async function updateLatest(
       was_new_install: false,
       was_force_reinstall: false,
       was_already_running: true,
-    })
-    return { success: true, latestVersion: version }
-  }
-
-  // Check if this version should be skipped due to minimumVersion setting
-  if (!forceReinstall && shouldSkipVersion(version)) {
-    logEvent('tengu_native_update_skipped_minimum_version', {
-      latency_ms: Date.now() - startTime,
-      target_version:
-        version as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
     })
     return { success: true, latestVersion: version }
   }
@@ -988,21 +948,15 @@ async function installLatestImpl(
     }
   }
 
-  // Installation succeeded (early return above covers failure). Mark as native
-  // and disable legacy auto-updater to protect symlinks.
+  // Installation succeeded (early return above covers failure). Mark as native.
   const config = getGlobalConfig()
   if (config.installMethod !== 'native') {
     saveGlobalConfig(current => ({
       ...current,
       installMethod: 'native',
-      // Disable legacy auto-updater to prevent npm sessions from deleting native symlinks.
-      // Native installations use NativeAutoUpdater instead, which respects native installation.
-      autoUpdates: false,
-      // Mark this as protection-based, not user preference
-      autoUpdatesProtectedForNative: true,
     }))
     logForDebugging(
-      'Native installer: Set installMethod to "native" and disabled legacy auto-updater for protection',
+      'Native installer: Set installMethod to "native"',
     )
   }
 

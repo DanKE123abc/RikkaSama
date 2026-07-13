@@ -28,6 +28,7 @@ import { getAuthHeaders } from '../../utils/http.js'
 import { readJSONLFile } from '../../utils/json.js'
 import { logError } from '../../utils/log.js'
 import { sleep } from '../../utils/sleep.js'
+import { getBaseUrl } from '../../utils/jsonConfig.js'
 import { jsonStringify } from '../../utils/slowOperations.js'
 import { getClaudeCodeUserAgent } from '../../utils/userAgent.js'
 import { isOAuthTokenExpired } from '../oauth/client.js'
@@ -109,11 +110,12 @@ export class FirstPartyEventLoggingExporter implements LogRecordExporter {
       schedule?: (fn: () => Promise<void>, delayMs: number) => () => void
     } = {},
   ) {
-    // Default: prod, except when ANTHROPIC_BASE_URL is explicitly staging.
-    // Overridable via tengu_1p_event_batch_config.baseUrl.
+    // Default: prod, except when base URL is explicitly staging.
+    // Reads from config.json. Overridable via tengu_1p_event_batch_config.baseUrl.
+    const configuredBaseUrl = getBaseUrl()
     const baseUrl =
       options.baseUrl ||
-      (process.env.ANTHROPIC_BASE_URL === 'https://api-staging.anthropic.com'
+      (configuredBaseUrl === 'https://api-staging.anthropic.com'
         ? 'https://api-staging.anthropic.com'
         : 'https://api.anthropic.com')
 

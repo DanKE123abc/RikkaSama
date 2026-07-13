@@ -21,20 +21,16 @@ import {
   type AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
   logEvent,
 } from '../analytics/index.js'
+import { getBaseUrl } from '../../utils/jsonConfig.js'
 
 // Files API is currently in beta. oauth-2025-04-20 enables Bearer OAuth
 // on public-api routes (auth.py: "oauth_auth" not in beta_versions → 404).
 const FILES_API_BETA_HEADER = 'files-api-2025-04-14,oauth-2025-04-20'
 const ANTHROPIC_VERSION = '2023-06-01'
 
-// API base URL - uses ANTHROPIC_BASE_URL set by env-manager for the appropriate environment
-// Falls back to public API for standalone usage
+// API base URL - reads from config.json
 function getDefaultApiBaseUrl(): string {
-  return (
-    process.env.ANTHROPIC_BASE_URL ||
-    process.env.CLAUDE_CODE_API_BASE_URL ||
-    'https://api.anthropic.com'
-  )
+  return getBaseUrl() || 'https://api.anthropic.com'
 }
 
 function logDebugError(message: string): void {

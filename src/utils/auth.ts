@@ -54,6 +54,7 @@ import {
   isEnvTruthy,
   isRunningOnHomespace,
 } from './envUtils.js'
+import { getApiKey } from './jsonConfig.js'
 import { errorMessage } from './errors.js'
 import { execSyncWithDefaults_DEPRECATED } from './execFileNoThrow.js'
 import * as lockfile from './lockfile.js'
@@ -236,12 +237,13 @@ export function getAnthropicApiKeyWithSource(
   key: null | string
   source: ApiKeySource
 } {
-  // --bare: hermetic auth. Only ANTHROPIC_API_KEY env or apiKeyHelper from
+  // --bare: hermetic auth. Only ANTHROPIC_API_KEY from config or apiKeyHelper from
   // the --settings flag. Never touches keychain, config file, or approval
   // lists. 3P (Bedrock/Vertex/Foundry) uses provider creds, not this path.
   if (isBareMode()) {
-    if (process.env.ANTHROPIC_API_KEY) {
-      return { key: process.env.ANTHROPIC_API_KEY, source: 'ANTHROPIC_API_KEY' }
+    const apiKey = getApiKey()
+    if (apiKey) {
+      return { key: apiKey, source: 'ANTHROPIC_API_KEY' }
     }
     if (getConfiguredApiKeyHelper()) {
       return {
@@ -256,9 +258,10 @@ export function getAnthropicApiKeyWithSource(
 
   // On homespace, don't use ANTHROPIC_API_KEY (use Console key instead)
   // https://anthropic.slack.com/archives/C08428WSLKV/p1747331773214779
+  // Read from config.json
   const apiKeyEnv = isRunningOnHomespace()
     ? undefined
-    : process.env.ANTHROPIC_API_KEY
+    : getApiKey()
 
   // Always check for direct environment variable when the user ran claude --print.
   // This is useful for CI, etc.

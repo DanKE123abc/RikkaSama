@@ -29,11 +29,7 @@ externalized `@ant/*` packages.
 
 ## Default Build Flags
 
-- `VOICE_MODE`
-  This is now included in the default build pipeline, not just the dev build.
-  It enables `/voice`, push-to-talk UI, voice notices, and dictation plumbing.
-  Runtime still depends on claude.ai OAuth plus either the native audio module
-  or a fallback recorder such as SoX.
+*None*
 
 ## Working Experimental Features
 
@@ -71,8 +67,6 @@ explicitly called out as default-on.
   Enables `/ultraplan`, prompt triggers, and exit-plan affordances.
 - `ULTRATHINK`
   Enables the extra thinking-depth mode switch.
-- `VOICE_MODE`
-  Enables voice toggling, dictation keybindings, voice notices, and voice UI.
 
 ### Agent, Memory, and Planning Experiments
 
@@ -160,10 +154,6 @@ or plumbing toggles rather than user-facing experimental features.
 These bundle today, but I would still treat them as experimental because they
 have meaningful runtime caveats:
 
-- `VOICE_MODE`
-  Bundles cleanly, but requires claude.ai OAuth and a local recording backend.
-  The native audio module is optional now; on this machine the fallback path
-  asks for `brew install sox`.
 - `NATIVE_CLIPBOARD_IMAGE`
   Bundles cleanly, but only accelerates macOS clipboard reads when
   `image-processor-napi` is present.

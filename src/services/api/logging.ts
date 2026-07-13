@@ -28,6 +28,7 @@ import {
   isBetaTracingEnabled,
   type Span,
 } from 'src/utils/telemetry/sessionTracing.js'
+import { getBaseUrl, getSmallFastModelName } from 'src/utils/jsonConfig.js'
 import type { NonNullableUsage } from '../../entrypoints/sdk/sdkUtilityTypes.js'
 import { consumeInvokingRequestId } from '../../utils/agentContext.js'
 import {
@@ -139,11 +140,13 @@ function detectGateway({
 }
 
 function getAnthropicEnvMetadata() {
+  const baseUrl = getBaseUrl()
+  const smallFastModel = getSmallFastModelName()
+
   return {
-    ...(process.env.ANTHROPIC_BASE_URL
+    ...(baseUrl
       ? {
-          baseUrl: process.env
-            .ANTHROPIC_BASE_URL as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
+          baseUrl: baseUrl as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
         }
       : {}),
     ...(process.env.ANTHROPIC_MODEL
@@ -152,10 +155,9 @@ function getAnthropicEnvMetadata() {
             .ANTHROPIC_MODEL as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
         }
       : {}),
-    ...(process.env.ANTHROPIC_SMALL_FAST_MODEL
+    ...(smallFastModel
       ? {
-          envSmallFastModel: process.env
-            .ANTHROPIC_SMALL_FAST_MODEL as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
+          envSmallFastModel: smallFastModel as AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS,
         }
       : {}),
   }
@@ -269,7 +271,7 @@ export function logAPIError({
   const gateway = detectGateway({
     headers:
       error instanceof APIError && error.headers ? error.headers : headers,
-    baseUrl: process.env.ANTHROPIC_BASE_URL,
+    baseUrl: getBaseUrl(),
   })
 
   const errStr = getErrorMessage(error)
@@ -628,7 +630,7 @@ export function logAPISuccessAndDuration({
 }): void {
   const gateway = detectGateway({
     headers,
-    baseUrl: process.env.ANTHROPIC_BASE_URL,
+    baseUrl: getBaseUrl(),
   })
 
   let textContentLength: number | undefined

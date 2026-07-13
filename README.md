@@ -57,7 +57,6 @@ src/
   skills/               # Skill system
   plugins/              # Plugin system
   bridge/               # IDE bridge
-  voice/                # Voice input
   tasks/                # Background task management
 ```
 

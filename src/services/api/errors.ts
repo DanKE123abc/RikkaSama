@@ -28,6 +28,7 @@ import {
   getDefaultMainLoopModelSetting,
   isNonCustomOpusModel,
 } from 'src/utils/model/model.js'
+import { getApiKey } from 'src/utils/jsonConfig.js'
 import { getModelStrings } from 'src/utils/model/modelStrings.js'
 import { getAPIProvider } from 'src/utils/model/providers.js'
 import { getIsNonInteractiveSession } from '../../bootstrap/state.js'
@@ -788,13 +789,13 @@ export function getAssistantMessageFromError(
     error.message.toLowerCase().includes('organization has been disabled')
   ) {
     const { source } = getAnthropicApiKeyWithSource()
-    // getAnthropicApiKeyWithSource conflates the env var with FD-passed keys
+    // getAnthropicApiKeyWithSource conflates config.json with FD-passed keys
     // under the same source value, and in CCR mode OAuth stays active despite
-    // the env var. The three guards ensure we only blame the env var when it's
+    // the key. The three guards ensure we only blame the key when it's
     // actually set and actually on the wire.
     if (
       source === 'ANTHROPIC_API_KEY' &&
-      process.env.ANTHROPIC_API_KEY &&
+      getApiKey() &&
       !isClaudeAISubscriber()
     ) {
       const hasStoredOAuth = getClaudeAIOAuthTokens()?.accessToken != null

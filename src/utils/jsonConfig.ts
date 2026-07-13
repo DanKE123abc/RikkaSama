@@ -11,16 +11,15 @@ export interface JsonConfig {
   ANTHROPIC_AUTH_TOKEN?: string
   CLAUDE_CODE_OAUTH_TOKEN?: string
   CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR?: string
-  
+
   // API 端点配置
   ANTHROPIC_BASE_URL?: string
   ANTHROPIC_CUSTOM_HEADERS?: string
-  
+
   // 模型配置
   ANTHROPIC_MODEL?: string
   ANTHROPIC_SMALL_FAST_MODEL?: string
-  ANTHROPIC_SMALL_FAST_MODEL_AWS_REGION?: string
-  
+
   // 自定义模型列表（覆盖内置模型）
   model_list?: string[]
 
@@ -40,7 +39,7 @@ export interface JsonConfig {
   CLOUD_ML_REGION?: string
   GOOGLE_APPLICATION_CREDENTIALS?: string
   ANTHROPIC_FOUNDRY_API_KEY?: string
-  
+
   // 功能开关
   CLAUDE_CODE_SIMPLE?: boolean
   CLAUDE_CODE_REMOTE?: boolean
@@ -49,20 +48,17 @@ export interface JsonConfig {
   CLAUDE_AGENT_SDK_CLIENT_APP?: string
   USER_TYPE?: string
   NODE_ENV?: string
-  
+
   // 会话和桥接配置
   CLAUDE_BRIDGE_OAUTH_TOKEN?: string
   CLAUDE_BRIDGE_BASE_URL?: string
   CLAUDE_BRIDGE_USE_CCR_V2?: boolean
   CLAUDE_CODE_SESSION_ACCESS_TOKEN?: string
   CLAUDE_CODE_ORGANIZATION_UUID?: string
-  
-  // 配置目录
-  CLAUDE_CONFIG_DIR?: string
-  
+
   // 国际化
   CLAUDE_LOCALE?: string
-  
+
   // 其他配置
   API_TIMEOUT_MS?: string
   MAX_STRUCTURED_OUTPUT_RETRIES?: string
@@ -72,7 +68,7 @@ export interface JsonConfig {
   CLAUDE_CODE_EXPERIMENTAL_BUILD?: boolean
   CLAUDE_CODE_VERIFY_PLAN?: boolean
   CCR_FORCE_BUNDLE?: boolean
-  
+
   // 代理配置
   HTTPS_PROXY?: string
   https_proxy?: string
@@ -84,7 +80,7 @@ export interface JsonConfig {
   NODE_EXTRA_CA_CERTS?: string
   REQUESTS_CA_BUNDLE?: string
   CURL_CA_BUNDLE?: string
-  
+
   // GitHub Actions 相关（子进程环境变量清理用）
   GITHUB_TOKEN?: string
   GH_TOKEN?: string
@@ -92,28 +88,68 @@ export interface JsonConfig {
   ACTIONS_ID_TOKEN_REQUEST_URL?: string
   ACTIONS_RUNTIME_TOKEN?: string
   ACTIONS_RUNTIME_URL?: string
-  
+
   // Azure Foundry 配置
   AZURE_CLIENT_SECRET?: string
   AZURE_CLIENT_CERTIFICATE_PATH?: string
-  
+
   // OpenTelemetry 配置
   OTEL_EXPORTER_OTLP_HEADERS?: string
   OTEL_EXPORTER_OTLP_LOGS_HEADERS?: string
   OTEL_EXPORTER_OTLP_METRICS_HEADERS?: string
   OTEL_EXPORTER_OTLP_TRACES_HEADERS?: string
-  
+
   // SSH 隧道相关
   ANTHROPIC_UNIX_SOCKET?: string
-  
+
   // 性能调试
   CLAUDE_CODE_SKIP_BEDROCK_AUTH?: boolean
   CLAUDE_CODE_SKIP_VERTEX_AUTH?: boolean
   CLAUDE_CODE_SKIP_FOUNDRY_AUTH?: boolean
   USE_STAGING_OAUTH?: boolean
-  
+
   // 其他自定义配置
   [key: string]: any
+}
+
+/**
+ * 从 config.json 读取配置值的便捷函数
+ */
+export function getConfigFromJson<T = any>(key: string, defaultValue?: T): T {
+  const config = loadConfig()
+  const value = config[key]
+  if (value === undefined) {
+    return defaultValue as T
+  }
+  return value as T
+}
+
+/**
+ * 获取 API Key（从 config.json）
+ */
+export function getApiKey(): string | undefined {
+  return getConfigFromJson<string>('ANTHROPIC_API_KEY')
+}
+
+/**
+ * 获取 API Base URL（从 config.json）
+ */
+export function getBaseUrl(): string | undefined {
+  return getConfigFromJson<string>('ANTHROPIC_BASE_URL')
+}
+
+/**
+ * 获取小快模型名称（从 config.json）
+ */
+export function getSmallFastModelName(): string | undefined {
+  return getConfigFromJson<string>('ANTHROPIC_SMALL_FAST_MODEL')
+}
+
+/**
+ * 获取语言设置（从 config.json）
+ */
+export function getLocale(): string | undefined {
+  return getConfigFromJson<string>('CLAUDE_LOCALE')
 }
 
 // 配置文件路径缓存

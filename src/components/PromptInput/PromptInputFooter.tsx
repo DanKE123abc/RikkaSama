@@ -14,7 +14,6 @@ import { useAppState } from '../../state/AppState.js';
 import type { ToolPermissionContext } from '../../Tool.js';
 import type { Message } from '../../types/message.js';
 import type { PromptInputMode, VimMode } from '../../types/textInputTypes.js';
-import type { AutoUpdaterResult } from '../../utils/autoUpdater.js';
 import { isFullscreenEnvEnabled } from '../../utils/fullscreen.js';
 import { isUndercover } from '../../utils/undercover.js';
 import { useMainLoopModel } from '../../hooks/useMainLoopModel.js';
@@ -39,11 +38,7 @@ type Props = {
   };
   vimMode: VimMode | undefined;
   mode: PromptInputMode;
-  autoUpdaterResult: AutoUpdaterResult | null;
-  isAutoUpdating: boolean;
   verbose: boolean;
-  onAutoUpdaterResult: (result: AutoUpdaterResult) => void;
-  onChangeIsUpdating: (isUpdating: boolean) => void;
   suggestions: SuggestionItem[];
   selectedSuggestion: number;
   maxColumnWidth?: number;
@@ -73,11 +68,7 @@ function PromptInputFooter({
   exitMessage,
   vimMode,
   mode,
-  autoUpdaterResult,
-  isAutoUpdating,
   verbose,
-  onAutoUpdaterResult,
-  onChangeIsUpdating,
   suggestions,
   selectedSuggestion,
   maxColumnWidth,
@@ -168,7 +159,7 @@ function PromptInputFooter({
           <PromptInputFooterLeftSide exitMessage={exitMessage} vimMode={vimMode} mode={mode} toolPermissionContext={toolPermissionContext} suppressHint={suppressHint} isLoading={isLoading} tasksSelected={pillSelected} teamsSelected={teamsSelected} teammateFooterIndex={teammateFooterIndex} tmuxSelected={tmuxSelected} isPasting={isPasting} isSearching={isSearching} historyQuery={historyQuery} setHistoryQuery={setHistoryQuery} historyFailedMatch={historyFailedMatch} onOpenTasksDialog={onOpenTasksDialog} />
         </Box>
         <Box flexShrink={1} gap={1}>
-          {isFullscreen ? null : <Notifications apiKeyStatus={apiKeyStatus} autoUpdaterResult={autoUpdaterResult} debug={debug} isAutoUpdating={isAutoUpdating} verbose={verbose} messages={messages} onAutoUpdaterResult={onAutoUpdaterResult} onChangeIsUpdating={onChangeIsUpdating} ideSelection={ideSelection} mcpClients={mcpClients} isInputWrapped={isInputWrapped} isNarrow={isNarrow} />}
+          {isFullscreen ? null : <Notifications apiKeyStatus={apiKeyStatus} debug={debug} verbose={verbose} messages={messages} ideSelection={ideSelection} mcpClients={mcpClients} isInputWrapped={isInputWrapped} isNarrow={isNarrow} />}
           {"external" === 'ant' && isUndercover() && <Text dimColor>undercover</Text>}
           <EffortIndicator contextHealth={contextHealth} tokenSpeed={tokenSpeed} />
           <BridgeStatusIndicator bridgeSelected={bridgeSelected} />

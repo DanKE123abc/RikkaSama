@@ -26,6 +26,7 @@ import {
 import { getOauthConfig } from '../../constants/oauth.js'
 import { logForDebugging } from '../../utils/debug.js'
 import { lazySchema } from '../../utils/lazySchema.js'
+import { getBaseUrl } from '../../utils/jsonConfig.js'
 import { jsonStringify } from '../../utils/slowOperations.js'
 
 // Matches the private_api backend limit
@@ -60,16 +61,12 @@ function debug(msg: string): void {
 /**
  * Base URL for uploads. Must match the host the token is valid for.
  *
- * Subprocess hosts (cowork) pass ANTHROPIC_BASE_URL alongside
- * CLAUDE_CODE_OAUTH_TOKEN — prefer that since getOauthConfig() only
- * returns staging when USE_STAGING_OAUTH is set, which such hosts don't
- * set. Without this a staging token hits api.anthropic.com → 401 → silent
- * skip → web viewer sees inert cards with no file_uuid.
+ * Reads from config.json first, then falls back to OAuth config.
  */
 function getBridgeBaseUrl(): string {
   return (
     getBridgeBaseUrlOverride() ??
-    process.env.ANTHROPIC_BASE_URL ??
+    getBaseUrl() ??
     getOauthConfig().BASE_API_URL
   )
 }

@@ -13,32 +13,24 @@ type Platform = 'win32' | 'darwin' | 'linux'
 
 // Config and data paths
 export const getGlobalClaudeFile = memoize((): string => {
-  // Priority 1: Check for data/.claude.json in executable directory (JSON config system)
-  try {
-    const execPath = process.execPath
-    const execDir = dirname(execPath)
-    const dataDir = join(execDir, 'data')
-    const dataConfigPath = join(dataDir, `.claude${fileSuffixForOauthConfig()}.json`)
-    
-    if (existsSync(dataConfigPath)) {
-      return dataConfigPath
-    }
-  } catch {
-    // Ignore errors, fall back to default behavior
-  }
-  
-  // Priority 2: Legacy fallback for backwards compatibility
-  if (
-    getFsImplementation().existsSync(
-      join(getClaudeConfigHomeDir(), '.config.json'),
-    )
-  ) {
-    return join(getClaudeConfigHomeDir(), '.config.json')
+  // Use getClaudeConfigHomeDir() which now always returns data/ directory
+  const configHomeDir = getClaudeConfigHomeDir()
+  const filename = `.claude${fileSuffixForOauthConfig()}.json`
+
+  // Check for data/.claude.json in config home directory
+  const dataConfigPath = join(configHomeDir, filename)
+  if (existsSync(dataConfigPath)) {
+    return dataConfigPath
   }
 
-  // Priority 3: Default to ~/.claude.json or CLAUDE_CONFIG_DIR override
-  const filename = `.claude${fileSuffixForOauthConfig()}.json`
-  return join(process.env.CLAUDE_CONFIG_DIR || homedir(), filename)
+  // Fallback to .config.json in config home directory
+  const legacyConfigPath = join(configHomeDir, '.config.json')
+  if (existsSync(legacyConfigPath)) {
+    return legacyConfigPath
+  }
+
+  // Default path in config home directory
+  return dataConfigPath
 })
 
 const hasInternetAccess = memoize(async (): Promise<boolean> => {
