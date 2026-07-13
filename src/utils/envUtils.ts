@@ -1,42 +1,29 @@
 import memoize from 'lodash-es/memoize.js'
-import { homedir } from 'os'
 import { join, dirname } from 'path'
 import { existsSync } from 'fs'
 
-// Memoized: 150+ callers, many on hot paths. Keyed off CLAUDE_CONFIG_DIR so
-// tests that change the env var get a fresh value without explicit cache.clear.
+// Memoized: 150+ callers, many on hot paths.
 export const getClaudeConfigHomeDir = memoize(
   (): string => {
-    // Priority 1: Explicit environment variable override
-    if (process.env.CLAUDE_CONFIG_DIR) {
-      return process.env.CLAUDE_CONFIG_DIR.normalize('NFC')
-    }
-
-    // Priority 2: Always use data/ directory
     // Check <cwd>/data/ first (development mode), then <execDir>/data/ (packaged mode)
-    try {
-      // Development mode: data/ relative to current working directory
-      const cwdDataDir = join(process.cwd(), 'data')
-      const cwdConfigPath = join(cwdDataDir, 'config.json')
-      if (existsSync(cwdConfigPath)) {
-        return cwdDataDir.normalize('NFC')
-      }
-
-      // Packaged mode: data/ relative to executable directory
-      const execDir = dirname(process.execPath)
-      const execDataDir = join(execDir, 'data')
-      const execConfigPath = join(execDataDir, 'config.json')
-      if (existsSync(execConfigPath)) {
-        return execDataDir.normalize('NFC')
-      }
-    } catch {
-      // Ignore errors, fall back to default
+    // Development mode: data/ relative to current working directory
+    const cwdDataDir = join(process.cwd(), 'data')
+    const cwdConfigPath = join(cwdDataDir, 'config.json')
+    if (existsSync(cwdConfigPath)) {
+      return cwdDataDir.normalize('NFC')
     }
 
-    // Priority 3: Fallback to ~/.claude
-    return join(homedir(), '.claude').normalize('NFC')
+    // Packaged mode: data/ relative to executable directory
+    const execDir = dirname(process.execPath)
+    const execDataDir = join(execDir, 'data')
+    const execConfigPath = join(execDataDir, 'config.json')
+    if (existsSync(execConfigPath)) {
+      return execDataDir.normalize('NFC')
+    }
+
+    // Should never reach here if data/config.json exists
+    return cwdDataDir.normalize('NFC')
   },
-  () => process.env.CLAUDE_CONFIG_DIR,
 )
 
 export function getTeamsDir(): string {

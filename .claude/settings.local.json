@@ -9,7 +9,9 @@
       "Bash(grep -rn \"getManagedFilePath\\\\|managedFilePath\" --include=*.ts C:/Users/15860/Desktop/RikkaSama/src/utils/settings)",
       "Bash(grep -r -i -l \"打分\\\\|评分\\\\|Claude.*评价\\\\|评价.*Claude\\\\|response.*score\\\\|response.*rating\" --include=*.ts --include=*.tsx --include=*.json .)",
       "Bash(grep -r -i -l \"FeedbackSurvey\\\\|feedback.*survey\\\\|memory.*survey\\\\|MemorySurvey\\\\|PostCompactSurvey\" --include=*.ts --include=*.tsx src/)",
-      "Bash(grep -r -l \"FeedbackSurvey\\\\|feedbackSurvey\\\\|feedback_survey\\\\|FEEDBACK_SURVEY\\\\|useFeedbackSurvey\\\\|useMemorySurvey\\\\|usePostCompactSurvey\\\\|SurveyState\\\\|surveyState\\\\|SkillImprovementSurvey\" --include=*.ts --include=*.tsx src/)"
+      "Bash(grep -r -l \"FeedbackSurvey\\\\|feedbackSurvey\\\\|feedback_survey\\\\|FEEDBACK_SURVEY\\\\|useFeedbackSurvey\\\\|useMemorySurvey\\\\|usePostCompactSurvey\\\\|SurveyState\\\\|surveyState\\\\|SkillImprovementSurvey\" --include=*.ts --include=*.tsx src/)",
+      "Bash(grep -rn \"AutoUpdater\\\\|autoUpdater\\\\|auto-update\\\\|auto_update\\\\|autoupdate\" C:Users15860DesktopRikkaSamasrc --include=*.ts --include=*.tsx --include=*.js -l)",
+      "Bash(grep -rn \"autoUpdater\\\\|auto-update\\\\|autoupdate\\\\|auto_update\" C:Users15860DesktopRikkaSama --include=*.yml --include=*.yaml --include=*.json --include=*.sh --include=*.bat --include=Dockerfile --include=Makefile)"
     ]
   }
 }
