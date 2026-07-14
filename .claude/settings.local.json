@@ -14,7 +14,8 @@
       "Bash(grep -rn \"autoUpdater\\\\|auto-update\\\\|autoupdate\\\\|auto_update\" C:Users15860DesktopRikkaSama --include=*.yml --include=*.yaml --include=*.json --include=*.sh --include=*.bat --include=Dockerfile --include=Makefile)",
       "Bash(grep -rl \"releaseNote\\\\|release-note\\\\|release_note\\\\|ReleaseNote\\\\|whatsNew\\\\|whats-new\\\\|whats_new\\\\|WhatsNew\\\\|changelog\\\\|Changelog\\\\|ChangeLog\\\\|versionNote\\\\|version-note\\\\|version_note\\\\|VersionNote\\\\|what.new\" --include=*.ts --include=*.tsx --include=*.json .)",
       "Bash(find . -name *release* -o -name *changelog* -o -name *whatsNew* -o -name *whats-new*)",
-      "Bash(grep -rl \"releaseNotes\\\\|release-notes\\\\|createWhatsNewFeed\\\\|checkForReleaseNotes\\\\|getRecentReleaseNotes\\\\|formatReleaseNoteForDisplay\\\\|getRecentReleaseNotesSync\\\\|lastReleaseNotesSeen\\\\|cachedChangelog\\\\|changelogLastFetched\\\\|migrateChangelogFromConfig\\\\|fetchAndStoreChangelog\\\\|getStoredChangelog\" --include=*.ts --include=*.tsx .)"
+      "Bash(grep -rl \"releaseNotes\\\\|release-notes\\\\|createWhatsNewFeed\\\\|checkForReleaseNotes\\\\|getRecentReleaseNotes\\\\|formatReleaseNoteForDisplay\\\\|getRecentReleaseNotesSync\\\\|lastReleaseNotesSeen\\\\|cachedChangelog\\\\|changelogLastFetched\\\\|migrateChangelogFromConfig\\\\|fetchAndStoreChangelog\\\\|getStoredChangelog\" --include=*.ts --include=*.tsx .)",
+      "Bash(grep -r RikkaSama --include=*.ts --include=*.tsx --include=*.json --include=*.md --include=*.js --include=*.toml -l)"
     ]
   }
 }

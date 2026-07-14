@@ -269,6 +269,30 @@ export function StatsOverviewTab({
     );
   }
 
+  return (
+    <StatsOverviewContent
+      displayStats={displayStats}
+      allTimeStats={allTimeStats}
+      dateRange={dateRange}
+      isLoading={isLoading}
+      terminalWidth={terminalWidth}
+    />
+  );
+}
+
+function StatsOverviewContent({
+  displayStats,
+  allTimeStats,
+  dateRange,
+  isLoading,
+  terminalWidth,
+}: {
+  displayStats: ClaudeCodeStats;
+  allTimeStats: ClaudeCodeStats;
+  dateRange: StatsDateRange;
+  isLoading: boolean;
+  terminalWidth: number;
+}) {
   const modelEntries = useMemo(
     () =>
       Object.entries(displayStats.modelUsage).sort(

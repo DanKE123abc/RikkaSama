@@ -7,7 +7,6 @@ import {
   logEvent,
 } from 'src/services/analytics/index.js'
 import { getCwd } from 'src/utils/cwd.js'
-import { checkForReleaseNotes } from 'src/utils/releaseNotes.js'
 import { setCwd } from 'src/utils/Shell.js'
 import { initSinks } from 'src/utils/sinks.js'
 import {
@@ -372,25 +371,17 @@ export async function setup(
 
   // Session-success-rate denominator. Emit immediately after the analytics
   // sink is attached — before any parsing, fetching, or I/O that could throw.
-  // inc-3694 (P0 CHANGELOG crash) threw at checkForReleaseNotes below; every
-  // event after this point was dead. This beacon is the earliest reliable
-  // "process started" signal for release health monitoring.
+  // This beacon is the earliest reliable "process started" signal for release
+  // health monitoring.
   logEvent('tengu_started', {})
 
   void prefetchApiKeyFromApiKeyHelperIfSafe(getIsNonInteractiveSession()) // Prefetch safely - only executes if trust already confirmed
   profileCheckpoint('setup_after_prefetch')
 
   // Pre-fetch data for Logo v2 - await to ensure it's ready before logo renders.
-  // --bare / SIMPLE: skip — release notes are interactive-UI display data,
-  // and getRecentActivity() reads up to 10 session JSONL files.
+  // --bare / SIMPLE: skip — getRecentActivity() reads up to 10 session JSONL files.
   if (!isBareMode()) {
     await getRecentActivity()
-
-    const { hasReleaseNotes } = await checkForReleaseNotes(
-      getGlobalConfig().lastReleaseNotesSeen,
-    )
-    // hasReleaseNotes is consumed later for logo display; the activity
-    // pre-fetch above is unconditional so Recent Activity always shows data.
   }
 
   // If permission mode is set to bypass, verify we're in a safe environment
