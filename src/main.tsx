@@ -36,7 +36,6 @@ import { launchRepl } from './replLauncher.js';
 import { hasGrowthBookEnvOverride, initializeGrowthBook, refreshGrowthBookAfterAuthChange } from './services/analytics/growthbook.js';
 import { fetchBootstrapData } from './services/api/bootstrap.js';
 import { type DownloadResult, downloadSessionFiles, type FilesApiConfig, parseFileSpecs } from './services/api/filesApi.js';
-import { prefetchPassesEligibility } from './services/api/referral.js';
 import { prefetchOfficialMcpUrls } from './services/mcp/officialRegistry.js';
 import type { McpSdkServerConfig, McpServerConfig, ScopedMcpServerConfig } from './services/mcp/types.js';
 import { isPolicyAllowed, loadPolicyLimits, refreshPolicyLimits, waitForPolicyLimitsToLoad } from './services/policyLimits/index.js';
@@ -2328,7 +2327,6 @@ async function run(): Promise<CommanderCommand> {
       void fetchBootstrapData();
 
       // TODO: Consolidate other prefetches into a single bootstrap request.
-      void prefetchPassesEligibility();
       if (bgRefreshThrottleMs > 0) {
         saveGlobalConfig(current => ({
           ...current,

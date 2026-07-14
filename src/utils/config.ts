@@ -10,7 +10,6 @@ import { logEvent } from '../services/analytics/index.js'
 import type { McpServerConfig } from '../services/mcp/types.js'
 import type {
   BillingType,
-  ReferralEligibilityResponse,
 } from '../services/oauth/types.js'
 import { getCwd } from '../utils/cwd.js'
 import { registerCleanup } from './cleanupRegistry.js'
@@ -282,22 +281,11 @@ export type GlobalConfig = {
     { hasAccess: boolean; hasAccessNotAsDefault?: boolean; timestamp: number }
   >
 
-  // Guest passes eligibility cache per org - key is org ID
-  passesEligibilityCache?: Record<
-    string,
-    ReferralEligibilityResponse & { timestamp: number }
-  >
-
   // Grove config cache per account - key is account UUID
   groveConfigCache?: Record<
     string,
     { grove_enabled: boolean; timestamp: number }
   >
-
-  // Guest passes upsell tracking
-  passesUpsellSeenCount?: number // Number of times the guest passes upsell has been shown
-  hasVisitedPasses?: boolean // Whether the user has visited /passes command
-  passesLastSeenRemaining?: number // Last seen remaining_passes count — reset upsell when it increases
 
   // Overage credit grant upsell tracking (keyed by org UUID — multi-org users).
   // Inlined shape (not import()) because config.ts is in the SDK build surface
@@ -512,7 +500,7 @@ export type GlobalConfig = {
   // Tmux live panel visibility (ant-only, toggled via Enter on tmux pill)
   tungstenPanelVisible?: boolean
 
-  // Epoch ms when background refreshes last ran (fast mode, quota, passes, client data).
+  // Epoch ms when background refreshes last ran (fast mode, quota, client data).
   // Used with tengu_cicada_nap_ms to throttle API calls
   startupPrefetchedAt?: number
 

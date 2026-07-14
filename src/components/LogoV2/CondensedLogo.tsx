@@ -14,7 +14,6 @@ import { renderModelSetting } from '../../utils/model/model.js';
 import { OffscreenFreeze } from '../OffscreenFreeze.js';
 import { AnimatedClawd } from './AnimatedClawd.js';
 import { Clawd } from './Clawd.js';
-import { GuestPassesUpsell, incrementGuestPassesSeenCount, useShowGuestPassesUpsell } from './GuestPassesUpsell.js';
 import { incrementOverageCreditUpsellSeenCount, OverageCreditUpsell, useShowOverageCreditUpsell } from './OverageCreditUpsell.js';
 export function CondensedLogo() {
   const $ = _c(29);
@@ -32,41 +31,22 @@ export function CondensedLogo() {
     agentName: agentNameFromSettings
   } = getLogoDisplayData();
   const agentName = agent ?? agentNameFromSettings;
-  const showGuestPassesUpsell = useShowGuestPassesUpsell();
   const showOverageCreditUpsell = useShowOverageCreditUpsell();
-  let t0;
-  let t1;
-  if ($[0] !== showGuestPassesUpsell) {
-    t0 = () => {
-      if (showGuestPassesUpsell) {
-        incrementGuestPassesSeenCount();
-      }
-    };
-    t1 = [showGuestPassesUpsell];
-    $[0] = showGuestPassesUpsell;
-    $[1] = t0;
-    $[2] = t1;
-  } else {
-    t0 = $[1];
-    t1 = $[2];
-  }
-  useEffect(t0, t1);
   let t2;
   let t3;
-  if ($[3] !== showGuestPassesUpsell || $[4] !== showOverageCreditUpsell) {
+  if ($[3] !== showOverageCreditUpsell) {
     t2 = () => {
-      if (showOverageCreditUpsell && !showGuestPassesUpsell) {
+      if (showOverageCreditUpsell) {
         incrementOverageCreditUpsellSeenCount();
       }
     };
-    t3 = [showOverageCreditUpsell, showGuestPassesUpsell];
-    $[3] = showGuestPassesUpsell;
-    $[4] = showOverageCreditUpsell;
-    $[5] = t2;
-    $[6] = t3;
+    t3 = [showOverageCreditUpsell];
+    $[3] = showOverageCreditUpsell;
+    $[4] = t2;
+    $[5] = t3;
   } else {
-    t2 = $[5];
-    t3 = $[6];
+    t2 = $[4];
+    t3 = $[5];
   }
   useEffect(t2, t3);
   const textWidth = Math.max(columns - 15, 20);
@@ -120,35 +100,25 @@ export function CondensedLogo() {
   } else {
     t9 = $[16];
   }
-  let t10;
-  if ($[17] !== showGuestPassesUpsell) {
-    t10 = showGuestPassesUpsell && <GuestPassesUpsell />;
-    $[17] = showGuestPassesUpsell;
-    $[18] = t10;
-  } else {
-    t10 = $[18];
-  }
   let t11;
-  if ($[19] !== showGuestPassesUpsell || $[20] !== showOverageCreditUpsell || $[21] !== textWidth) {
-    t11 = !showGuestPassesUpsell && showOverageCreditUpsell && <OverageCreditUpsell maxWidth={textWidth} twoLine={true} />;
-    $[19] = showGuestPassesUpsell;
-    $[20] = showOverageCreditUpsell;
-    $[21] = textWidth;
-    $[22] = t11;
+  if ($[17] !== showOverageCreditUpsell || $[18] !== textWidth) {
+    t11 = showOverageCreditUpsell && <OverageCreditUpsell maxWidth={textWidth} twoLine={true} />;
+    $[17] = showOverageCreditUpsell;
+    $[18] = textWidth;
+    $[19] = t11;
   } else {
-    t11 = $[22];
+    t11 = $[19];
   }
   let t12;
-  if ($[23] !== t10 || $[24] !== t11 || $[25] !== t6 || $[26] !== t7 || $[27] !== t9) {
-    t12 = <OffscreenFreeze><Box flexDirection="row" gap={2} alignItems="center">{t4}<Box flexDirection="column">{t6}{t7}{t9}{t10}{t11}</Box></Box></OffscreenFreeze>;
-    $[23] = t10;
-    $[24] = t11;
-    $[25] = t6;
-    $[26] = t7;
-    $[27] = t9;
-    $[28] = t12;
+  if ($[20] !== t11 || $[21] !== t6 || $[22] !== t7 || $[23] !== t9) {
+    t12 = <OffscreenFreeze><Box flexDirection="row" gap={2} alignItems="center">{t4}<Box flexDirection="column">{t6}{t7}{t9}{t11}</Box></Box></OffscreenFreeze>;
+    $[20] = t11;
+    $[21] = t6;
+    $[22] = t7;
+    $[23] = t9;
+    $[24] = t12;
   } else {
-    t12 = $[28];
+    t12 = $[24];
   }
   return t12;
 }

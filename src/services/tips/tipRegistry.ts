@@ -49,11 +49,6 @@ import {
   formatGrantAmount,
   getCachedOverageCreditGrant,
 } from '../api/overageCreditGrant.js'
-import {
-  checkCachedPassesEligibility,
-  formatCreditAmount,
-  getCachedReferrerReward,
-} from '../api/referral.js'
 import { getSessionsSinceLastShown } from './tipHistory.js'
 import type { Tip, TipContext } from './types.js'
 
@@ -571,30 +566,6 @@ const externalTips: Tip[] = [
           'off',
         ) !== 'off'
       )
-    },
-  },
-  {
-    id: 'guest-passes',
-    content: async ctx => {
-      const claude = color('claude', ctx.theme)
-      const reward = getCachedReferrerReward()
-      return reward
-        ? getTipTranslation('guestPassesWithReward', {
-            reward: claude(formatCreditAmount(reward)),
-            passes: claude('/passes'),
-          })
-        : getTipTranslation('guestPasses', {
-            passes: claude('/passes'),
-          })
-    },
-    cooldownSessions: 3,
-    isRelevant: async () => {
-      const config = getGlobalConfig()
-      if (config.hasVisitedPasses) {
-        return false
-      }
-      const { eligible } = checkCachedPassesEligibility()
-      return eligible
     },
   },
   {
