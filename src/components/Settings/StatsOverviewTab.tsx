@@ -156,14 +156,10 @@ export function StatsOverviewTab({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadStats = useCallback(async (range: StatsDateRange) => {
-    try {
-      const data = await aggregateClaudeCodeStatsForRange(range);
-      return data;
-    } catch (err) {
-      throw err;
-    }
-  }, []);
+  const loadStats = useCallback(
+    (range: StatsDateRange) => aggregateClaudeCodeStatsForRange(range),
+    [],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -273,65 +269,65 @@ export function StatsOverviewTab({
     );
   }
 
-  // Calculate favorite model and total tokens
-  const modelEntries = Object.entries(displayStats.modelUsage).sort(
-    ([, a], [, b]) =>
-      b.inputTokens + b.outputTokens - (a.inputTokens + a.outputTokens),
+  const modelEntries = useMemo(
+    () =>
+      Object.entries(displayStats.modelUsage).sort(
+        ([, a], [, b]) =>
+          b.inputTokens + b.outputTokens - (a.inputTokens + a.outputTokens),
+      ),
+    [displayStats.modelUsage],
   );
   const favoriteModel = modelEntries[0];
-  const totalTokens = modelEntries.reduce(
-    (sum, [, usage]) => sum + usage.inputTokens + usage.outputTokens,
-    0,
+  const totalTokens = useMemo(
+    () =>
+      modelEntries.reduce(
+        (sum, [, usage]) => sum + usage.inputTokens + usage.outputTokens,
+        0,
+      ),
+    [modelEntries],
   );
 
-  const factoid = generateFunFactoid(displayStats, totalTokens);
+  const factoid = useMemo(
+    () => generateFunFactoid(displayStats, totalTokens),
+    [displayStats, totalTokens],
+  );
   const rangeDays =
     dateRange === '7d' ? 7 : dateRange === '30d' ? 30 : displayStats.totalDays;
 
   // Shot stats (ant-only)
-  let shotStatsData: {
+  const shotStatsData: {
     avgShots: string;
     buckets: { label: string; count: number; pct: number }[];
-  } | null = null;
-  if (feature('SHOT_STATS') && displayStats.shotDistribution) {
+  } | null = useMemo(() => {
+    if (!feature('SHOT_STATS') || !displayStats.shotDistribution) return null;
     const dist = displayStats.shotDistribution;
     const total = Object.values(dist).reduce((s, n) => s + n, 0);
-    if (total > 0) {
-      const totalShots = Object.entries(dist).reduce(
-        (s, [count, sessions]) => s + parseInt(count, 10) * sessions,
-        0,
-      );
-      const bucket = (min: number, max?: number) =>
-        Object.entries(dist)
-          .filter(([k]) => {
-            const n = parseInt(k, 10);
-            return n >= min && (max === undefined || n <= max);
-          })
-          .reduce((s, [, v]) => s + v, 0);
-      const pct = (n: number) => Math.round((n / total) * 100);
-      shotStatsData = {
-        avgShots: (totalShots / total).toFixed(1),
-        buckets: [
-          { label: '1-shot', count: bucket(1, 1), pct: pct(bucket(1, 1)) },
-          {
-            label: '2–5 shot',
-            count: bucket(2, 5),
-            pct: pct(bucket(2, 5)),
-          },
-          {
-            label: '6–10 shot',
-            count: bucket(6, 10),
-            pct: pct(bucket(6, 10)),
-          },
-          { label: '11+ shot', count: bucket(11), pct: pct(bucket(11)) },
-        ],
-      };
-    }
-  }
+    if (total === 0) return null;
+    const totalShots = Object.entries(dist).reduce(
+      (s, [count, sessions]) => s + parseInt(count, 10) * sessions,
+      0,
+    );
+    const bucket = (min: number, max?: number) =>
+      Object.entries(dist)
+        .filter(([k]) => {
+          const n = parseInt(k, 10);
+          return n >= min && (max === undefined || n <= max);
+        })
+        .reduce((s, [, v]) => s + v, 0);
+    const pct = (n: number) => Math.round((n / total) * 100);
+    return {
+      avgShots: (totalShots / total).toFixed(1),
+      buckets: [
+        { label: '1-shot', count: bucket(1, 1), pct: pct(bucket(1, 1)) },
+        { label: '2–5 shot', count: bucket(2, 5), pct: pct(bucket(2, 5)) },
+        { label: '6–10 shot', count: bucket(6, 10), pct: pct(bucket(6, 10)) },
+        { label: '11+ shot', count: bucket(11), pct: pct(bucket(11)) },
+      ],
+    };
+  }, [displayStats]);
 
   return (
     <Box flexDirection="column" marginTop={1}>
-      {/* Activity Heatmap */}
       {allTimeStats.dailyActivity.length > 0 && (
         <Box flexDirection="column" marginBottom={1}>
           <Ansi>
@@ -340,10 +336,8 @@ export function StatsOverviewTab({
         </Box>
       )}
 
-      {/* Date range selector */}
       <DateRangeSelector dateRange={dateRange} isLoading={isLoading} />
 
-      {/* Section 1: Usage */}
       <Box flexDirection="row" gap={4} marginBottom={1}>
         <Box flexDirection="column" width={28}>
           {favoriteModel && (
@@ -362,7 +356,6 @@ export function StatsOverviewTab({
         </Box>
       </Box>
 
-      {/* Section 2: Activity */}
       <Box flexDirection="row" gap={4}>
         <Box flexDirection="column" width={28}>
           <Text wrap="truncate">
@@ -421,7 +414,6 @@ export function StatsOverviewTab({
         </Box>
       </Box>
 
-      {/* Speculation time saved (ant-only) */}
       {'external' === 'ant' && displayStats.totalSpeculationTimeSavedMs > 0 && (
         <Box flexDirection="row" gap={4}>
           <Box flexDirection="column" width={28}>
@@ -496,7 +488,6 @@ export function StatsOverviewTab({
         </>
       )}
 
-      {/* Fun factoid */}
       {factoid && (
         <Box marginTop={1}>
           <Text color="suggestion">{factoid}</Text>

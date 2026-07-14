@@ -1,5 +1,4 @@
 import { plot as asciichart } from 'asciichart';
-import chalk from 'chalk';
 import figures from 'figures';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTerminalSize } from '../../hooks/useTerminalSize.js';
