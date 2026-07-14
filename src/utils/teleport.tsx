@@ -80,7 +80,7 @@ Use sentence case for the title (capitalize only the first word and proper nouns
 The branch name should be clear, concise, and accurately reflect the content of the coding task.
 You should keep it short and simple, ideally no more than 4 words. The branch should always start with "claude/" and should be all lower case, with words separated by dashes.
 
-Return a JSON object with "title" and "branch" fields.
+Return a JSON object with "title" and "branch" fields. You MUST respond with ONLY a valid JSON object. Do not include any other text, explanation, or markdown formatting.
 
 Example 1: {"title": "Fix login button not working on mobile", "branch": "claude/fix-mobile-login-button"}
 Example 2: {"title": "Update README with installation instructions", "branch": "claude/update-readme"}
@@ -107,22 +107,6 @@ async function generateTitleAndBranch(description: string, signal: AbortSignal):
     const response = await queryHaiku({
       systemPrompt: asSystemPrompt([]),
       userPrompt,
-      outputFormat: {
-        type: 'json_schema',
-        schema: {
-          type: 'object',
-          properties: {
-            title: {
-              type: 'string'
-            },
-            branch: {
-              type: 'string'
-            }
-          },
-          required: ['title', 'branch'],
-          additionalProperties: false
-        }
-      },
       signal,
       options: {
         querySource: 'teleport_generate_title',

@@ -55,7 +55,7 @@ export function extractConversationText(messages: Message[]): string {
 
 const SESSION_TITLE_PROMPT = `Generate a concise, sentence-case title (3-7 words) that captures the main topic or goal of this coding session. The title should be clear enough that the user recognizes the session in a list. Use sentence case: capitalize only the first word and proper nouns.
 
-Return JSON with a single "title" field.
+You MUST respond with ONLY a valid JSON object with a single "title" field. Do not include any other text, explanation, or markdown formatting.
 
 Good examples:
 {"title": "Fix login button on mobile"}
@@ -87,17 +87,6 @@ export async function generateSessionTitle(
     const result = await queryHaiku({
       systemPrompt: asSystemPrompt([SESSION_TITLE_PROMPT]),
       userPrompt: trimmed,
-      outputFormat: {
-        type: 'json_schema',
-        schema: {
-          type: 'object',
-          properties: {
-            title: { type: 'string' },
-          },
-          required: ['title'],
-          additionalProperties: false,
-        },
-      },
       signal,
       options: {
         querySource: 'generate_session_title',

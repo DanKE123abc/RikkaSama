@@ -66,7 +66,9 @@ export async function execPromptHook(
 
 Your response must be a JSON object matching one of the following schemas:
 1. If the condition is met, return: {"ok": true}
-2. If the condition is not met, return: {"ok": false, "reason": "Reason for why it is not met"}`,
+2. If the condition is not met, return: {"ok": false, "reason": "Reason for why it is not met"}
+
+You MUST respond with ONLY a valid JSON object. Do not include any other text, explanation, or markdown formatting.`,
         ]),
         thinkingConfig: { type: 'disabled' as const },
         tools: toolUseContext.options.tools,
@@ -84,18 +86,6 @@ Your response must be a JSON object matching one of the following schemas:
           querySource: 'hook_prompt',
           mcpTools: [],
           agentId: toolUseContext.agentId,
-          outputFormat: {
-            type: 'json_schema',
-            schema: {
-              type: 'object',
-              properties: {
-                ok: { type: 'boolean' },
-                reason: { type: 'string' },
-              },
-              required: ['ok'],
-              additionalProperties: false,
-            },
-          },
         },
       })
 

@@ -19,20 +19,9 @@ export async function generateSessionName(
   try {
     const result = await queryHaiku({
       systemPrompt: asSystemPrompt([
-        'Generate a short kebab-case name (2-4 words) that captures the main topic of this conversation. Use lowercase words separated by hyphens. Examples: "fix-login-bug", "add-auth-feature", "refactor-api-client", "debug-test-failures". Return JSON with a "name" field.',
+        'Generate a short kebab-case name (2-4 words) that captures the main topic of this conversation. Use lowercase words separated by hyphens. Examples: "fix-login-bug", "add-auth-feature", "refactor-api-client", "debug-test-failures". You MUST respond with ONLY a valid JSON object with a single "name" field. Do not include any other text, explanation, or markdown formatting.',
       ]),
       userPrompt: conversationText,
-      outputFormat: {
-        type: 'json_schema',
-        schema: {
-          type: 'object',
-          properties: {
-            name: { type: 'string' },
-          },
-          required: ['name'],
-          additionalProperties: false,
-        },
-      },
       signal,
       options: {
         querySource: 'rename_generate_name',
