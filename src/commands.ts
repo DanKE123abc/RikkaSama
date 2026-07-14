@@ -36,7 +36,6 @@ import review, { ultrareview } from './commands/review.js'
 import session from './commands/session/index.js'
 import share from './commands/share/index.js'
 import skills from './commands/skills/index.js'
-import status from './commands/status/index.js'
 import tasks from './commands/tasks/index.js'
 import teleport from './commands/teleport/index.js'
 /* eslint-disable @typescript-eslint/no-require-imports */
@@ -48,7 +47,6 @@ const agentsPlatform =
 import securityReview from './commands/security-review.js'
 import bughunter from './commands/bughunter/index.js'
 import terminalSetup from './commands/terminalSetup/index.js'
-import usage from './commands/usage/index.js'
 import theme from './commands/theme/index.js'
 import vim from './commands/vim/index.js'
 import { feature } from 'bun:bundle'
@@ -111,7 +109,6 @@ import thinkback from './commands/thinkback/index.js'
 import thinkbackPlay from './commands/thinkback-play/index.js'
 import permissions from './commands/permissions/index.js'
 import plan from './commands/plan/index.js'
-import privacySettings from './commands/privacy-settings/index.js'
 import hooks from './commands/hooks/index.js'
 import files from './commands/files/index.js'
 import branch from './commands/branch/index.js'
@@ -160,14 +157,9 @@ import tag from './commands/tag/index.js'
 import outputStyle from './commands/output-style/index.js'
 import remoteEnv from './commands/remote-env/index.js'
 import upgrade from './commands/upgrade/index.js'
-import {
-  extraUsage,
-  extraUsageNonInteractive,
-} from './commands/extra-usage/index.js'
 import rateLimitOptions from './commands/rate-limit-options/index.js'
 import statusline from './commands/statusline.js'
 import effort from './commands/effort/index.js'
-import stats from './commands/stats/index.js'
 // insights.ts is 113KB (3200 lines, includes diffLines/html rendering). Lazy
 // shim defers the heavy module until /insights is actually invoked.
 const usageReport: Command = {
@@ -276,8 +268,6 @@ const COMMANDS = memoize((): Command[] => [
   resume,
   session,
   skills,
-  stats,
-  status,
   statusline,
   tag,
   theme,
@@ -287,10 +277,7 @@ const COMMANDS = memoize((): Command[] => [
   securityReview,
   terminalSetup,
   upgrade,
-  extraUsage,
-  extraUsageNonInteractive,
   rateLimitOptions,
-  usage,
   usageReport,
   vim,
   ...(webCmd ? [webCmd] : []),
@@ -304,7 +291,6 @@ const COMMANDS = memoize((): Command[] => [
   thinkbackPlay,
   permissions,
   plan,
-  privacySettings,
   hooks,
   exportCommand,
   sandboxToggle,
@@ -598,7 +584,7 @@ export const REMOTE_SAFE_COMMANDS: Set<Command> = new Set([
   color, // Change agent color
   vim, // Toggle vim mode
   cost, // Show session cost (local cost tracking)
-  usage, // Show usage info
+  // usage, // Show usage info
   copy, // Copy last message
   btw, // Quick note
   plan, // Plan mode toggle

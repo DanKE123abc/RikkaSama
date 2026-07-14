@@ -10,17 +10,18 @@ import { Pane } from '../design-system/Pane.js';
 import { Tabs, Tab } from '../design-system/Tabs.js';
 import { Status, buildDiagnostics } from './Status.js';
 import { Config } from './Config.js';
-import { Usage } from './Usage.js';
+import { StatsOverviewTab } from './StatsOverviewTab.js';
+import { StatsModelsTab } from './StatsModelsTab.js';
 import type { LocalJSXCommandContext, CommandResultDisplay } from '../../commands.js';
 type Props = {
   onClose: (result?: string, options?: {
     display?: CommandResultDisplay;
   }) => void;
   context: LocalJSXCommandContext;
-  defaultTab: 'Status' | 'Config' | 'Usage' | 'Gates';
+  defaultTab: 'Status' | 'Config' | 'Stats' | 'Models' | 'Gates';
 };
 export function Settings(t0) {
-  const $ = _c(25);
+  const $ = _c(28);
   const {
     onClose,
     context,
@@ -88,45 +89,54 @@ export function Settings(t0) {
   }
   let t6;
   if ($[12] === Symbol.for("react.memo_cache_sentinel")) {
-    t6 = <Tab key="usage" title="Usage"><Usage /></Tab>;
+    t6 = <Tab key="stats" title="Stats"><StatsOverviewTab onClose={onClose} /></Tab>;
     $[12] = t6;
   } else {
     t6 = $[12];
   }
   let t7;
-  if ($[13] !== contentHeight) {
-    t7 = false ? [<Tab key="gates" title="Gates"><Gates onOwnsEscChange={setGatesOwnsEsc} contentHeight={contentHeight} /></Tab>] : [];
-    $[13] = contentHeight;
-    $[14] = t7;
+  if ($[13] === Symbol.for("react.memo_cache_sentinel")) {
+    t7 = <Tab key="models" title="Models"><StatsModelsTab onClose={onClose} /></Tab>;
+    $[13] = t7;
   } else {
-    t7 = $[14];
+    t7 = $[13];
   }
   let t8;
-  if ($[15] !== t4 || $[16] !== t5 || $[17] !== t7) {
-    t8 = [t4, t5, t6, ...t7];
-    $[15] = t4;
+  if ($[14] !== contentHeight) {
+    t8 = false ? [<Tab key="gates" title="Gates"><Gates onOwnsEscChange={setGatesOwnsEsc} contentHeight={contentHeight} /></Tab>] : [];
+    $[14] = contentHeight;
+    $[15] = t8;
+  } else {
+    t8 = $[15];
+  }
+  let t9;
+  if ($[16] !== t5 || $[17] !== t4 || $[18] !== t6 || $[19] !== t7 || $[20] !== t8) {
+    t9 = [t5, t4, t6, t7, ...t8];
     $[16] = t5;
-    $[17] = t7;
-    $[18] = t8;
-  } else {
-    t8 = $[18];
-  }
-  const tabs = t8;
-  const t9 = defaultTab !== "Config" && defaultTab !== "Gates";
-  const t10 = tabsHidden || insideModal ? undefined : contentHeight;
-  let t11;
-  if ($[19] !== selectedTab || $[20] !== t10 || $[21] !== t9 || $[22] !== tabs || $[23] !== tabsHidden) {
-    t11 = <Pane color="permission"><Tabs color="permission" selectedTab={selectedTab} onTabChange={setSelectedTab} hidden={tabsHidden} initialHeaderFocused={t9} contentHeight={t10}>{tabs}</Tabs></Pane>;
-    $[19] = selectedTab;
-    $[20] = t10;
+    $[17] = t4;
+    $[18] = t6;
+    $[19] = t7;
+    $[20] = t8;
     $[21] = t9;
-    $[22] = tabs;
-    $[23] = tabsHidden;
-    $[24] = t11;
   } else {
-    t11 = $[24];
+    t9 = $[21];
   }
-  return t11;
+  const tabs = t9;
+  const t10 = defaultTab !== "Config" && defaultTab !== "Gates" && defaultTab !== "Stats" && defaultTab !== "Models";
+  const t11 = tabsHidden || insideModal ? undefined : contentHeight;
+  let t12;
+  if ($[22] !== selectedTab || $[23] !== t11 || $[24] !== t10 || $[25] !== tabs || $[26] !== tabsHidden) {
+    t12 = <Pane color="permission"><Tabs color="permission" selectedTab={selectedTab} onTabChange={setSelectedTab} hidden={tabsHidden} initialHeaderFocused={t10} contentHeight={t11}>{tabs}</Tabs></Pane>;
+    $[22] = selectedTab;
+    $[23] = t11;
+    $[24] = t10;
+    $[25] = tabs;
+    $[26] = tabsHidden;
+    $[27] = t12;
+  } else {
+    t12 = $[27];
+  }
+  return t12;
 }
 function _temp2() {
   return buildDiagnostics().catch(_temp);

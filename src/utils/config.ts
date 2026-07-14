@@ -281,12 +281,6 @@ export type GlobalConfig = {
     { hasAccess: boolean; hasAccessNotAsDefault?: boolean; timestamp: number }
   >
 
-  // Grove config cache per account - key is account UUID
-  groveConfigCache?: Record<
-    string,
-    { grove_enabled: boolean; timestamp: number }
-  >
-
   // Overage credit grant upsell tracking (keyed by org UUID — multi-org users).
   // Inlined shape (not import()) because config.ts is in the SDK build surface
   // and the SDK bundler can't resolve CLI service modules.
